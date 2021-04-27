@@ -1,0 +1,59 @@
+* {
+    padding: 7;
+    margin: 0;
+    box-sizing: border-box;
+	font-family: 'Press Start 2P', cursive;
+	text-shadow: 3px 3px #ff0000;
+}
+html{
+    font-family: 'auto', Times, serif;
+}
+body {
+	background-image: url('https://th.bing.com/th/id/R6591c5c2985f635187fa72462466e973?rik=TvpO%2bODaYkTbsQ&riu=http%3a%2f%2fblubuilt.com.au%2fwp-content%2fuploads%2f2014%2f12%2fsample_1920_light_red-1200x800.png&ehk=YbjwiEhKwTxGFk8iPv%2fH6y5GWET5JXKdQZzw7TGW%2bMI%3d&risl=&pid=ImgRaw');
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center;
+}
+div {
+	text-align: center;
+	size = "15"
+	padding: 15;
+}
+h1 {
+	font-family:verdana;
+	font-size:200%;
+	color:white;
+}
+img {
+	border-radius:50%;
+	text-align:center;
+}
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+.button1 {
+     line-height: 12px;
+     width: fit-content;
+     font-size: 8pt;
+     font-family: tahoma;
+     margin-top: 1px;
+     margin-right: 2px;
+     position:absolute;
+     top:0;
+     right:0;
+ }
+ .button2 {
+  background-color: white;
+  text-decoration-color: white;
+     line-height: 12px;
+     width: 100%;
+     font-size: 20pt;
+     font-family: tahoma;
+     margin-top: 1px;
+     margin-right: 2px;
+     position:absolute;
+     right:0;
+ }
