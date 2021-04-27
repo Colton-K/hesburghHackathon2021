@@ -1,11 +1,13 @@
 #!/bin/python3
 
-from flask import Flask, render_template, request, jsonify, flash, session
+from flask import Flask, render_template, request, jsonify, flash, session, redirect
+from functools import wraps
 import os
 import socket
 import requests
 
 app = Flask(__name__)
+app.secret_key = os.urandom(16)
 
 def getIP():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -20,6 +22,20 @@ def getIP():
     return IP
 
 
+"""
+    Check logged in 
+"""
+def loginRequired(f):
+    @wraps(f)
+    def wrap(*arg, **kwargs):
+        if "loggedIn" in session:
+            return f(*args, **kwargs)
+        else:
+            return redirect('/login')
+
+    return wrap
+
+
 from user import routes
 
 """
@@ -27,6 +43,7 @@ from user import routes
         - dine now button leads to login page
 """
 @app.route("/")
+#  @loginRequired
 def index():
     return render_template('main_page.html')
 
@@ -45,13 +62,22 @@ def login():
 #  def signup():
 #      return render_template('signup.html')
 
-#  """
-#      Profile Page
-#          - logout button returns to home page
-#  """
-#  @app.route("/profile")
-#  def profile():
-#      return render_template('profile.html')
+"""
+    Profile Page
+        - logout button returns to home page
+"""
+@app.route("/profile")
+@loginRequired
+def profile():
+    return render_template('profile.html')
+
+"""
+    Dine now page
+"""
+@app.route("/dineNow")
+@loginRequired
+def dineNow():
+    return render_template("dineNow.html")
 
 #  """
 #      Preferences page
