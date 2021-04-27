@@ -1,12 +1,8 @@
-<html>
-    <head>
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/main.css')  }}">
-        <script type="text/javascript" src="{{ url_for('static', filename='main.js')  }}"></script>
-        <title>Bia</title>
-        <style>
-            body {
-                background-color: {{ color }};
-            }
-        </style>
-    </head>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1>index</h1>
+
+{% endblock %}
+

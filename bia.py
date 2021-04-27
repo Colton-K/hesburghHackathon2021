@@ -3,12 +3,9 @@
 from flask import Flask, render_template, request, jsonify, flash, session
 import os
 import socket
+import requests
 
 app = Flask(__name__)
-
-base = 'index.html'
-
-c = "#335533"
 
 def getIP():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -22,37 +19,63 @@ def getIP():
         s.close
     return IP
 
+
+from user import routes
+
 """
     Home page
+        - dine now button leads to login page
 """
 @app.route("/")
 def index():
-    return render_template(base, color=c)
+    return render_template('index.html')
 
 """
     Login Page
+        - option to link to new user page
 """
 @app.route("/login")
 def login():
-    return render_template(login)
+    return render_template('login.html')
 
-"""
-    Profile Page
-"""
+#  """
+    #  New user page
+#  """
+#  @app.route("/sign_up")
+#  def signup():
+#      return render_template('signup.html')
 
-"""
-    Preferences page
-"""
+#  """
+#      Profile Page
+#          - logout button returns to home page
+#  """
+#  @app.route("/profile")
+#  def profile():
+#      return render_template('profile.html')
 
-""" 
-    Match Found page
-        - have accept and deny options
-"""
+#  """
+#      Preferences page
+#          - links back to home page
+#  """
+#  @app.route("/preferences")
+#  def preferences():
+#      return render_template('preferences.html')
 
-"""
-    Confirmation page
-        - specify location, time, have a live chat?
-"""
+#  """ 
+#      Match Found page
+#          - have accept and deny options
+#  """
+#  @app.route("/matchFound")
+#  def matchFound():
+#      return render_template('matchFound.html')
+
+#  """
+#      Confirmation page
+#          - specify location, time, have a live chat?
+#  """
+#  @app.route("/confirmation")
+#  def confirmation():
+#      return render_template('confirmation.html')
 
 """
     Run app
