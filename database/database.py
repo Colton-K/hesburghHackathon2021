@@ -100,7 +100,7 @@ class Document:
 
     def exists(self):
         return self._collection.find_one(
-            filter = {},
+            filter = self._query,
             projection = {'_id' : 1}
         ) is not None
 
