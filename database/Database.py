@@ -98,6 +98,12 @@ class Document:
     def drop(self):
         self._collection.delete_one(filter = self._query)
 
+    def exists(self):
+        return self._collection.find_one(
+            filter = {},
+            projection = {'_id' : 1}
+        ) is not None
+
     def __contains__(self, key):
         query = copy.deepcopy(self._query)
         query[key] = {"$exists" : True, "$ne" : None}

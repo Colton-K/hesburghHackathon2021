@@ -1,6 +1,6 @@
 
 # probably best to import this way
-from Database import db
+from database.Database import db
 
 # The top level of a database contains collections; use this to get one (it
 # will be autocreated if it doesn't exist yet)
