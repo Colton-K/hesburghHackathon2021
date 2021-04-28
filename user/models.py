@@ -1,8 +1,9 @@
 #!/bin/python3
 
-from flask import Flask, jsonify, request, session
+from flask import Flask, jsonify, request, session, redirect
 import uuid
 from passlib.hash import pbkdf2_sha256
+from user import users
 
 class User:
 
@@ -15,22 +16,17 @@ class User:
         return jsonify(user), 200
 
     def signup(self):
-        print(request.form)
- 
-        # create the user object
-        user = {
-                "_id":uuid.uuid4().hex,
-                "name":request.form.get('name'),
-                "email":request.form.get('email'),
-                "password":request.form.get('password')
-                }
+        try:
+            userId = users.createUser(
+                request.form.get('name'),
+                request.form.get('password'),
+                request.form.get('email')
+            )
 
-        # encrypt the password
-        user['password'] = pbkdf2_sha256.encrypt(user["password"])
+            user = users.getUserInfo(userId)
 
-        """
-        put user in the database!
-        """
+        except users.EmailAlreadyUsedError:
+            return jsonify({'error' : 'Email address already used'}), 401
 
         return jsonify(user), 200
 
@@ -41,8 +37,14 @@ class User:
     def login(self):
 
         # find user in database
+        userId = users.authenticateUser(
+            password = request.form.get('password'),
+            email = request.form.get('email')
+        )
 
-        if user and pbkdf2_sha256.verify(request.form.get('password'), user['password']):
-            return self.start_session(user)
+        if userId is not None:
+            user = users.getUserInfo(userId)
 
-        return jsonify({ "error": "Invalid login credentials" }), 401
+            return self.startSession(user)
+        else:
+            return jsonify({ "error": "Invalid login credentials" }), 401

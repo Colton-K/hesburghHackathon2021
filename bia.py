@@ -6,8 +6,9 @@ import os
 import socket
 import requests
 
-app = Flask(__name__)
-app.secret_key = os.urandom(16)
+if __name__ == "__main__":
+    app = Flask(__name__)
+    app.secret_key = os.urandom(16)
 
 def getIP():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -27,7 +28,7 @@ def getIP():
 """
 def loginRequired(f):
     @wraps(f)
-    def wrap(*arg, **kwargs):
+    def wrap(*args, **kwargs):
         if "loggedIn" in session:
             return f(*args, **kwargs)
         else:
