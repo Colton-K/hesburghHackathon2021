@@ -36,7 +36,7 @@ def loginRequired(f):
     return wrap
 
 
-from user import routes
+from user import routes, messaging
 
 """
     Home page
