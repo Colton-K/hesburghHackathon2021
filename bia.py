@@ -6,9 +6,8 @@ import os
 import socket
 import requests
 
-if __name__ == "__main__":
-    app = Flask(__name__)
-    app.secret_key = os.urandom(16)
+app = Flask(__name__)
+app.secret_key = os.urandom(16)
 
 def getIP():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
