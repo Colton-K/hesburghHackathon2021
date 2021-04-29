@@ -33,6 +33,11 @@ class SubDocument:
             {"$push" : {self._setPath : value}}
         )
 
+    def remove(self, value):
+        list_ = self.get()
+        list_.remove(value)
+        self.set(list_)
+
     def get(self):
 
         parts = self._setPath.split('.')

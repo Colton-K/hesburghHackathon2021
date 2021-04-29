@@ -1,5 +1,6 @@
 
 from database.database import db
+from database.search import search
 import secrets
 import hashlib
 
@@ -26,7 +27,12 @@ def createUser(name, password, email):
     usersCollection.new({
         'user_id' : userId,
         'name' : name,
-        'email' : email
+        'email' : email,
+        'groups' : [],
+        'invited' : [],
+        'parties' : [],
+        'invited_parties' : [],
+        'notifications' : []
     })
 
     # generate a password salt and resulting hash
@@ -62,6 +68,9 @@ def authenticateUser(email, password):
     
     return userId
 
+def userExists(userId):
+    return usersCollection.where('user_id', userId).exists()
+
 def getUserInfo(userId):
     user = usersCollection.where('user_id', userId)
     return {
@@ -69,6 +78,9 @@ def getUserInfo(userId):
         'name' : user['name'].get(),
         'email' : user['email'].get()
     }
+
+def getUserDocument(userId):
+    return usersCollection.where('user_id', userId)
 
 def deleteUser(userId):
     '''delete a user by userId'''
@@ -98,6 +110,13 @@ def registerHook(action, hook):
         _userHooks[action] = [hook]
     else:
         _userHooks[action].append(hook)
+
+def searchUsers(name, limit = 20):
+    results = usersCollection.raw.find({},
+        projection = {"_id" : 0, 'name' : 1, 'user_id' : 1}
+    )
+
+    return search(results, name, "name", limit)
 
 _userHooks = {}
 
