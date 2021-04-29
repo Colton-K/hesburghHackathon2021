@@ -10,6 +10,7 @@ $("form[name=signup_form").submit(function(e) {
     data: data,
     dataType: "json",
     success: function(resp) {
+      setCookie("SameSite", "Strict");
       setCookie("email", resp.email);
       setCookie("name", resp.name);
       setCookie("user_id", resp.user_id);
@@ -37,6 +38,7 @@ $("form[name=login_form").submit(function(e) {
     data: data,
     dataType: "json",
     success: function(resp) {
+      setCookie("SameSite", "Strict");
       setCookie("email", resp.email);
       setCookie("name", resp.name);
       setCookie("user_id", resp.user_id);
