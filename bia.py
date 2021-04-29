@@ -28,7 +28,10 @@ def getIP():
 def loginRequired(f):
     @wraps(f)
     def wrap(*args, **kwargs):
-        if "loggedIn" in session:
+        userId = request.cookies.get("user_id")
+        sessionId = request.cookies.get("session_id")
+
+        if userId and sessionId and sessions.checkSession(userId, sessionId):
             return f(*args, **kwargs)
         else:
             return redirect('/login')
@@ -36,7 +39,7 @@ def loginRequired(f):
     return wrap
 
 
-from user import routes, messaging
+from user import routes, messaging, sessions
 
 """
     Home page

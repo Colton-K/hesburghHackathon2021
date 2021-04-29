@@ -18,7 +18,7 @@ def createUser(name, password, email):
     already made under that email address'''
 
     # generate a userId
-    userId = secrets.token_hex(16)  
+    userId = secrets.token_hex(16)
     
     if not emailAvailable(email):
         raise EmailAlreadyUsedError()
@@ -65,7 +65,7 @@ def authenticateUser(email, password):
 def getUserInfo(userId):
     user = usersCollection.where('user_id', userId)
     return {
-        'userId' : userId,
+        'user_id' : userId,
         'name' : user['name'].get(),
         'email' : user['email'].get()
     }

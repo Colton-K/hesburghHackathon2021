@@ -4,6 +4,7 @@ import websockets
 import threading
 import json
 from bia import getIP
+from user import sessions
 
 class Connection:
 
@@ -57,9 +58,15 @@ class ConnectionDispatcher:
             credentials = json.loads(credentials)
 
             userId = credentials['user_id']
-            # TODO -- authenticate!
+            sessionId = credentials['session_id']
 
             connection = Connection(websocket, userId)
+            if not sessions.checkSession(userId, sessionId):
+                connection.send('auth_fail', '')
+                await websocket.recv()
+                await websocket.close()
+                return
+    
             self.addConnection(userId, connection)
             await connection.listen()
         

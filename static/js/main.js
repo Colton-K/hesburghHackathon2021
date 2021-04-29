@@ -10,6 +10,11 @@ $("form[name=signup_form").submit(function(e) {
     data: data,
     dataType: "json",
     success: function(resp) {
+      setCookie("email", resp.email);
+      setCookie("name", resp.name);
+      setCookie("user_id", resp.user_id);
+      setCookie("session_id", resp.session_id);
+
       window.location.href = "/";
     },
     error: function(resp) {
@@ -32,6 +37,11 @@ $("form[name=login_form").submit(function(e) {
     data: data,
     dataType: "json",
     success: function(resp) {
+      setCookie("email", resp.email);
+      setCookie("name", resp.name);
+      setCookie("user_id", resp.user_id);
+      setCookie("session_id", resp.session_id);
+
       window.location.href = "/";
     },
     error: function(resp) {

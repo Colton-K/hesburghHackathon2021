@@ -3,15 +3,15 @@
 from flask import Flask, jsonify, request, session, redirect
 import uuid
 from passlib.hash import pbkdf2_sha256
-from user import users
+from user import users, sessions
 
 class User:
 
     def startSession(self, user):
-        user["password"] = ''
-
         session['logged_in'] = True
         session['user'] = user
+
+        user['session_id'] = sessions.createSession(user['user_id'])
 
         return jsonify(user), 200
 
@@ -28,7 +28,7 @@ class User:
         except users.EmailAlreadyUsedError:
             return jsonify({'error' : 'Email address already used'}), 401
 
-        return jsonify(user), 200
+        return self.startSession(user)
 
     def signout(self):
         session.clear()
