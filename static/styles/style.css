@@ -8,8 +8,7 @@ html{
     font-family: 'auto', Times, serif;
 }
 body {
-	background-image: url('https://th.bing.com/th/id/R6591c5c2985f635187fa72462466e973?rik=TvpO%2bODaYkTbsQ&riu=http%3a%2f%2fblubuilt.com.au%2fwp-content%2fuploads%2f2014%2f12%2fsample_1920_light_red-1200x800.png&ehk=YbjwiEhKwTxGFk8iPv%2fH6y5GWET5JXKdQZzw7TGW%2bMI%3d&risl=&pid=ImgRaw');
-	background-repeat: no-repeat;
+	background-color: #fa8072;
 	background-size: cover;
 	background-position: center;
 }
