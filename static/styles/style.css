@@ -3,7 +3,6 @@
     margin: 0;
     box-sizing: border-box;
 	font-family: 'Press Start 2P', cursive;
-	text-shadow: 3px 3px #ff0000;
 }
 html{
     font-family: 'auto', Times, serif;
@@ -16,16 +15,18 @@ body {
 }
 div {
 	text-align: center;
-	size = "15"
+	size: "15";
 	padding: 15;
 }
 h1 {
 	font-family:verdana;
 	font-size:200%;
-	color:white;
+	color:whitei;
+    text-shadow: 3px 3px #ff0000;
 }
 img {
-	border-radius:50%;
+    margin: 10px 10px 10px 10px;
+	border-radius: 50%;
 	text-align:center;
 }
 .center {
@@ -36,24 +37,40 @@ img {
 }
 .button1 {
      line-height: 12px;
-     width: fit-content;
      font-size: 8pt;
      font-family: tahoma;
-     margin-top: 1px;
-     margin-right: 2px;
      position:absolute;
      top:0;
      right:0;
  }
+ 
  .button2 {
-  background-color: white;
-  text-decoration-color: white;
+     margin: 0 0 24px;
+     padding: 11px 30px 10px;
+     background-color: white;
+     text-decoration-color: white;
      line-height: 12px;
-     width: 100%;
+     width: 50%;
      font-size: 20pt;
      font-family: tahoma;
-     margin-top: 1px;
-     margin-right: 2px;
-     position:absolute;
-     right:0;
  }
+
+#main {
+    position: relative;
+    max-width:100%;
+    top: 20%;
+    border-radius: 20px;
+    margin:auto
+}
+
+#dhCard {
+    margin: 0 auto;
+    max-width: 75%;
+	min-width: 27em;
+	background: #ffffff;
+	border-radius: 20px;
+    margin: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+    display: flex;
+}
