@@ -43,7 +43,6 @@ img {
      top:0;
      right:0;
  }
- 
  .button2 {
      margin: 0 0 24px;
      padding: 11px 30px 10px;
@@ -57,10 +56,12 @@ img {
 
 #main {
     position: relative;
-    max-width:100%;
     top: 20%;
     border-radius: 20px;
-    margin:auto
+    margin:auto;
+    max-width: 60em;
+    min-width: 60em;
+    padding: 1em 1em 1em 1em ;
 }
 
 #dhCard {
