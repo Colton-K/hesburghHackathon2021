@@ -19,3 +19,11 @@ def login_():
 @app.route('/user/getGroups', methods=['POST'])
 def getGroups():
     return User().getGroups()
+
+@app.route('/user/get_parties', methods=['POST'])
+def getParties():
+    return User().getParties()
+
+@app.route('/user/create_party', methods=['POST'])
+def createParty():
+    return User().createParty()

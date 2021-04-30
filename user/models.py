@@ -3,7 +3,7 @@
 from flask import Flask, jsonify, request, session, redirect
 import uuid
 from passlib.hash import pbkdf2_sha256
-from user import users, sessions
+from user import users, sessions, parties, groups
 
 class User:
 
@@ -51,6 +51,12 @@ class User:
 
 
     def getGroups(self):
-        return
+        userId = request.cookies.get("user_id")
+        return jsonify(groups.getUserGroups(userId)), 200
 
-        
+    def getParties(self):
+        userId = request.cookies.get("user_id")
+        return jsonify(parties.getJoinableParties(userId)), 200
+
+    def createParty(self):
+        print(request.form)
