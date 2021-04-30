@@ -71,8 +71,10 @@ class User:
 
     def createGroup(self):
         userId = request.cookies.get("user_id")
-
-        return getGroups()
+        name = dict(request.form)['groupName']
+        r = groups.createGroup(name, userId, publicVisible=True, publicJoinable=True)
+        print("creation:",r)
+        return jsonify(groups.searchGroups(name, userId)), 201
 
     def getParties(self):
         userId = request.cookies.get("user_id")

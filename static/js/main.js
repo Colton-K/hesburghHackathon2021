@@ -33,7 +33,7 @@ function logout(event) {
 }
 
 function searchGroups(value) {
-    console.log(value)
+    console.log("Searching: " + value)
     var workingDiv = document.getElementById("groupSearchResults");
     var results = "Results: <br>";
     //results += value; 
@@ -88,7 +88,7 @@ function searchGroups(value) {
 };
 
 function addGroup(groupName) {
-    // console.log("groupName: " + groupName)
+    console.log("groupName: " + groupName)
     
     $.ajax({
         url: "/user/addGroup",
@@ -107,7 +107,6 @@ function addGroup(groupName) {
     })
 }
 
-// TODO: Implement this correctly!
 function createGroup(groupName) {
     console.log(groupName)
 
@@ -120,6 +119,7 @@ function createGroup(groupName) {
         dataType: "json",
         success: function(resp) {
             console.log(resp)
+            window.location.href = "/profile";
         },
         error: function(resp) {
             // $error.text(resp.responseJSON.error).removeClass("error--hidden");
