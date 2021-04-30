@@ -40,7 +40,7 @@ def loginRequired(f):
     return wrap
 
 
-from user import routes, sessions, users, groups
+from user import routes, sessions, users, groups, parties
 
 """
     Home page
@@ -104,6 +104,8 @@ def profile():
 @app.route("/dineNow")
 @loginRequired
 def dineNow():
+    userId = request.cookies.get("user_id")
+    parties.removeUserFromParties(userId)
     return render_template("dineNow.html")
 
 #  """

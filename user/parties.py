@@ -54,13 +54,13 @@ def createParty(leaderId,
             messaging.sendMessage('party_created', notification)
         
     else:
-        usersToNotify = set()
-        for groupId in groups_:
-            group = groups.getGroupDocument(groupId)
-            if group.exists():
-                usersToNotify |= set(group['members'].get())
-
         if _messages:
+            usersToNotify = set()
+            for groupId in groups_:
+                group = groups.getGroupDocument(groupId)
+                if group.exists():
+                    usersToNotify |= set(group['members'].get())
+
             from user import messaging
             messaging.sendMessage('party_created', notification, usersToNotify)
     
@@ -262,7 +262,21 @@ def deleteParty(leaderId, partyId):
     for userId in invited:
         users.getUserDocument(userId)['party_invites'].remove(partyId)
 
-    # TODO -- notify!
+    if _messages:
+        from user import messaging
+
+        if party['public'].get():
+            usersToNotify = None
+        else:
+            usersToNotify = set(members) | set(requests) | set(invited)
+            for groupId in party['groups'].get():
+                group = groups.getGroupDocument(groupId)
+                if group.exists():
+                    usersToNotify |= set(group['members'].get())
+
+        messaging.sendMessage('party_leave', {
+            'party_id' : partyId
+        }, usersToNotify)
 
     party.drop()
 
@@ -275,13 +289,40 @@ def removeUserFromParties(userId):
         return {'result' : 'failure', 'error' : 'User doesn\'t exist'}
     
     for partyId in user['parties'].get():
-        partiesCollection.where('party_id', partyId)['members'].remove(userId)
+        party = partiesCollection.where('party_id', partyId)
+        if userId == party['leader'].get():
+            deleteParty(userId, partyId)
+        else:
+            party['members'].remove(userId)
+            notifyUserJoined(userId, partyId)
+
+            if _messages:
+                from user import messaging
+                messaging.sendMessage('party_leave', {
+                    'party_id' : partyId
+                }, [userId])
 
     for partyId in user['party_invites'].get():
         partiesCollection.where('party_id', partyId)['invited'].remove(userId)
+
+        if _messages:
+            from user import messaging
+            messaging.sendMessage('party_leave', {
+                'party_id' : partyId
+            }, [userId])
     
     for partyId in user['party_requests'].get():
         partiesCollection.where('party_id', partyId)['requests'].remove(userId)
+
+        if _messages:
+            from user import messaging
+            messaging.sendMessage('leave_group', {
+                'party_id' : partyId
+            }, [userId])
+
+    user['parties'] = []
+    user['party_invites'] = []
+    user['party_requests'] = []
     
     return {'result' : 'success'}
 
