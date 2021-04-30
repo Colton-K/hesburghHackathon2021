@@ -36,6 +36,7 @@ img {
   width: 50%;
 }
 .button1 {
+     z-index: 1000;
      line-height: 12px;
      font-size: 8pt;
      font-family: tahoma;
@@ -44,6 +45,7 @@ img {
      right:0;
  }
  .button2 {
+     z-index: 1000;
      margin: 0 0 24px;
      padding: 11px 30px 10px;
      background-color: white;
