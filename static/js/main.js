@@ -45,8 +45,15 @@ function getGroups(value) {
       data: value,
       dataType: "json",
       success: function(resp) {
-        results += resp.error;
-        workingDiv.innerHTML = results 
+        
+        console.log(resp)
+        var len = resp.length;
+        console.log(len)
+        for (var i = 0; i < len; i++) {
+            console.log(resp[i]);
+            //results += resp[i]
+        }
+        workingDiv.innerHTML = results;
       },
       error: function(resp) {
         $error.text(resp.responseJSON.error).removeClass("error--hidden");

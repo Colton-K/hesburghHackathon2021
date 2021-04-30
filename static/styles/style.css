@@ -26,12 +26,21 @@ h1 {
 h2 {
     font-family: Sans-serif;
     font-size: 150%;
-    color: gray;
+    color: black;
     margin: 10px;
+    max-width: 95%;
+}
+h3 {
+    font-family: Sans-serif;
+    font-size: 125%;
+    color: gray;
+    margin: 5px;
+    max-width: 95%;
 }
 p {
     line-height: normal;
     margin: 2px;
+    max-width: 95%;
 }
 img {
     margin: 10px 10px 10px 10px;
