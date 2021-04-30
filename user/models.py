@@ -52,3 +52,5 @@ class User:
 
     def getGroups(self):
         return
+
+        
