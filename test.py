@@ -9,6 +9,7 @@ parties._messages = False
 
 user1 = users.createUser('test', 'test', 'test@test.com')
 user2 = users.createUser('test2', 'test', 'test2@test.com')
+user3 = users.createUser('test3', 'test', 'test3@test.com')
 
 group1 = groups.createGroup("Test Univeristy", user2, '@test.com')['group_id']
 groups.joinGroup(user1, group1)
