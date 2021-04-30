@@ -27,3 +27,7 @@ def getParties():
 @app.route('/user/create_party', methods=['POST'])
 def createParty():
     return User().createParty()
+
+@app.route('/user/join_party', methods=['POST'])
+def joinParty():
+    return User().joinParty()

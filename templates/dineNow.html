@@ -76,7 +76,7 @@
 <html>
     <h1>Dine Now page</h1>
 </html>
-  <div class="card-wrapper">
+  <div class="card-wrapper" id='setup-party'>
 
     <div class="card">
 
@@ -97,8 +97,8 @@
 
       <form name="create_party" id="create_party">
 
-        <label class="container" id="make_public"> Public
-            <input type="checkbox">
+        <label class="container"> Public
+            <input type="checkbox" id="make_public">
             <span class="checkmark"></span>
         </label>
 
@@ -111,15 +111,60 @@
     </div>
   
   </div>
+
+  <div id='wait-on-party' style="display: none">
+    <h1 id='wait-on-party-title'></h1>
+  </div>
+
+  <div id='manage-party' style="display: none">
+    <h1>Managing Party</h1>
+    <div class="card-wrapper">
+        <div id='member-requests' class='card'>
+            <h2 style='padding-top: 40px;'>Members and Join Requests</h2>
+        </div>
+        
+    </div>
+</div>
 <script>
 var parties = [];
 var groups = [];
+var selectedParty = null;
+var partyOwner = false;
 
-function ajaxOnSuccess(endpoint, func) {
+function waitOnParty(partyId, message) {
+    selectedParty = partyId;
+    
+    document.getElementById('setup-party').style.display = "none";
+    document.getElementById('wait-on-party').style.display = "inherit";
+    document.getElementById('wait-on-party-title').innerHTML = message;
+}
+
+function manageParty(partyId) {
+    document.getElementById('setup-party').style.display = "none";
+    document.getElementById('manage-party').style.display = "inherit";
+}
+
+function attemptJoinParty(partyId) {
+    var data = 'party_id=' + partyId;
+    ajaxOnSuccess('/user/join_party', (resp) => {
+        if (resp.result == 'success') {
+            waitOnParty(partyId, resp.message);
+        }
+        else {
+            console.log(resp.error);
+        }
+    }, data);
+}
+
+function ajaxOnSuccess(endpoint, func, data) {
+    if (!data) {
+        data = '';
+    }
+
     $.ajax({
         url: endpoint,
         type: "POST",
-        data: '',
+        data: data,
         dataType: "json",
         success: function(resp) {
             func(resp);
@@ -139,39 +184,61 @@ ajaxOnSuccess('/user/get_parties', function(resp) {
 
         var partyLoc = party.location;
 
-        button.innerHTML = "<h2>Party with " + party.n_members + " member(s)<h2>";
+        if (party.name == "Party") {
+            button.innerHTML = "<h2>" + party.name +  "with " + party.n_members + " member(s)<h2>";
+        }
+        else {
+            button.innerHTML = "<h2>" + party.name +  " (" + party.n_members + " member(s))<h2>";
+        }
         button.style.width = "100%";
         button.style.marginTop = "10px";
-
+        button.id = party.party_id;
+        button.onclick = (e) => {
+            var partyId = e.target.id;
+            selectedParty = partyId;
+            attemptJoinParty(partyId);
+        }
 
         document.getElementById('parties').appendChild(button)
     }
 });
 
-ajaxOnSuccess('/user/getGroups', function(groups) {
+ajaxOnSuccess('/user/getGroups', function(resp) {
+    groups = resp;
+
     for (var i = 0; i < groups.length; i++) {
         var group = groups[i];
 
         var groupElem = document.createElement('label');
         groupElem.classList.add("container");
         groupElem.innerHTML = group.name
-        + ` <input type="checkbox">
+        + ` <input type="checkbox" ` + "id=" + group.group_id + ` +>
             <span class="checkmark"></span>
         </label>`;
-        groupElem.id = group.group_id;
 
         var refNode = document.getElementById('add_groups');
         refNode.parentNode.insertBefore(groupElem, refNode.nextSibling);
     }
 });
 
-$("form[name=create_party]").submit(function(e) {
+$("form[name=create_party").submit(function(e) {
 
     e.preventDefault();
     e.stopImmediatePropagation();
 
-    var data = $form.serialize();
-    console.log('go!');
+    var data = "";
+    if (document.getElementById('make_public').value == "on") {
+        data = "public=true";
+    }
+    else {
+        data = "public=false";
+    }
+
+    for (var i = 0; i < groups.length; i++) {
+        if (document.getElementById(groups[i].group_id).value == "on") {
+            data += "&" + groups[i].group_id + "=true";
+        }
+    }
 
     $.ajax({
         url: "/user/create_party",
@@ -179,6 +246,11 @@ $("form[name=create_party]").submit(function(e) {
         data: data,
         dataType: "json",
         success: function(resp) {
+            if (resp.result == 'success') {
+                selectedParty = resp.party_id;
+                partyOwner = true;
+                manageParty(resp.party_id);
+            }
             e.preventDefault();
         },
         error: function(resp) {
@@ -186,6 +258,44 @@ $("form[name=create_party]").submit(function(e) {
         }
     });
 });
+
+function acceptUser(e) {
+    var user_id = e.target.id.slice(1);
+    var data = 'user_id=' + user_id + '&party_id=' + selectedParty;
+    ajaxOnSuccess('/users/accept_user', () => {
+        document.getElementById('r' + user_id).remove();
+    })
+}
+
+function declineUser(e) {
+    var user_id = e.target.id.slice(1);
+    var data = 'user_id=' + user_id + '&party_id=' + selectedParty;
+    ajaxOnSuccess('/users/decline_user', () => {
+        document.getElementById('r' + user_id).remove();
+    })
+}
+
+registerListener('party_request', (info) => {
+
+    var id = selectedParty;
+    var node = document.createElement('div');
+    node.innerHTML = `
+        <h2>` + info.name + `<h2>
+        <button id="a`+id+`" style='margin-left : 20px'>Accept</button>
+        <button id="d`+id+`">Decline</button>
+    `;
+    node.style.padding = "10px";
+    node.style.marginTop = "20px";
+    node.style.background = '#d0f0d0';
+    node.id = 'r' + id;
+
+    document.getElementById('a' + id).onclick = acceptUser;
+    document.getElementById('d' + id).onclick = declineUser;
+
+    document.getElementById('member-requests').appendChild(node);
+});
+
+
 
 </script>
 

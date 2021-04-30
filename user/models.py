@@ -59,4 +59,22 @@ class User:
         return jsonify(parties.getJoinableParties(userId)), 200
 
     def createParty(self):
-        print(request.form)
+        userId = request.cookies.get("user_id")
+        data = dict(request.form)
+        public = data['public'] == 'true'
+
+        groups_ = []
+        for key in data:
+            if key != 'public':
+                groups_.append(key)
+
+        result = parties.createParty(userId, groups_, None, None, public = public)
+        return jsonify(result), 200
+    
+    def joinParty(self):
+        userId = request.cookies.get("user_id")
+        data = dict(request.form)
+        partyId = data['party_id']
+
+        result = parties.joinPartyRequest(userId, partyId)
+        return jsonify(result), 200

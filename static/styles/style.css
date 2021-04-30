@@ -111,6 +111,14 @@ br {
     margin: auto;
 }
 
+.anyCard {
+    margin: 0 auto;
+    max-width: 75%;
+	background: #ffffff;
+	border-radius: 20px;
+    margin: auto;
+}
+
 #profileCard {
     margin: 0 auto;
     max-width: 75%;
