@@ -39,7 +39,7 @@ def loginRequired(f):
     return wrap
 
 
-from user import routes, messaging, sessions, users
+from user import routes, messaging, sessions, users, groups
 
 """
     Home page
@@ -58,6 +58,14 @@ def index():
 def login():
     return render_template('login.html')
 
+"""
+    Logout Page
+"""
+@app.route("/logout")
+def logout():
+    
+    return index()
+
 #  """
     #  New user page
 #  """
@@ -74,10 +82,16 @@ def login():
 def profile():
     userID = request.cookies.get("user_id")
     username = users.getUserInfo(userID)['name']
-    groups = users.getUserInfo(userID)
+    g = groups.getUserGroups(userID)
+    if not g:
+        g = "You do not belong to any groups."
+    else:
+        g = "Groups: "
+        g += groups.getUserGroups(userID).join("")
+
     profilePic = users.getUserInfo(userID) #['profilePic']
     #  profilePic = 'https://b-ingwersen.github.io/photos/self.jpg'
-    return render_template('profile_page.html', name=username, groups=groups, imgSource=profilePic)
+    return render_template('profile_page.html', name=username, groups=g, imgSource=profilePic)
 
 """
     Dine now page
