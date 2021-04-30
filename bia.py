@@ -39,7 +39,7 @@ def loginRequired(f):
     return wrap
 
 
-from user import routes, messaging, sessions
+from user import routes, messaging, sessions, users
 
 """
     Home page
@@ -72,7 +72,12 @@ def login():
 @app.route("/profile")
 @loginRequired
 def profile():
-    return render_template('profile.html')
+    userID = request.cookies.get("user_id")
+    username = users.getUserInfo(userID)['name']
+    groups = users.getUserInfo(userID)
+    profilePic = users.getUserInfo(userID) #['profilePic']
+    #  profilePic = 'https://b-ingwersen.github.io/photos/self.jpg'
+    return render_template('profile_page.html', name=username, groups=groups, imgSource=profilePic)
 
 """
     Dine now page
@@ -112,4 +117,4 @@ def dineNow():
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
 
-    app.run(host=getIP(), port=3600)
+    app.run(host=getIP(), port=3601)

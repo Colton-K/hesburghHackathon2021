@@ -48,3 +48,7 @@ class User:
             return self.startSession(user)
         else:
             return jsonify({ "error": "Invalid login credentials" }), 401
+
+
+    def getGroups(self):
+        return

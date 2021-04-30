@@ -15,3 +15,7 @@ def signout():
 @app.route('/user/login', methods=['POST'])
 def login_():
     return User().login()
+
+@app.route('/user/getGroups', methods=['POST'])
+def getGroups():
+    return User().getGroups()
