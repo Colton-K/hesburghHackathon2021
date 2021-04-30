@@ -2,7 +2,7 @@
     padding: 7;
     margin: 0;
     box-sizing: border-box;
-	font-family: 'Press Start 2P', cursive;
+	font-family: Sans-serif;
 }
 html{
     font-family: 'auto', Times, serif;
@@ -18,10 +18,20 @@ div {
 	padding: 15;
 }
 h1 {
-	font-family:verdana;
+	font-family:Sans-serif;
 	font-size:200%;
 	color:white;
     text-shadow: 1px 1px #ff0000, -1px 1px #ff0000, -1px -1px #ff0000, 1px -1px #ff0000;
+}
+h2 {
+    font-family: Sans-serif;
+    font-size: 150%;
+    color: gray;
+    margin: 10px;
+}
+p {
+    line-height: normal;
+    margin: 2px;
 }
 img {
     margin: 10px 10px 10px 10px;
@@ -43,10 +53,11 @@ br {
      z-index: 1000;
      line-height: 12px;
      font-size: 8pt;
-     font-family: tahoma;
+     font-family: Sans-serif;
      position:absolute;
      top:0;
      right:0;
+     border-radius:10px;
  }
  .button2 {
      z-index: 1000;
@@ -57,8 +68,11 @@ br {
      line-height: 12px;
      width: 50%;
      font-size: 20pt;
-     font-family: tahoma;
+     font-family: Sans-serif;
+     border-radius:10px;
  }
+
+ 
 
 #main {
     position: relative;
@@ -75,6 +89,14 @@ br {
     margin: auto;
 }
 
+#profileCard {
+    margin: 0 auto;
+    max-width: 75%;
+	background: #ffffff;
+	border-radius: 20px;
+    margin: auto;
+}
+
 .column {
     float: left;
     width: 50%;
@@ -84,4 +106,8 @@ br {
     content: "";
     display: table;
     clear: both;
+}
+
+.searchBar {
+    border-radius: 10px;
 }

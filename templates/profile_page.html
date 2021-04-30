@@ -2,30 +2,40 @@
 
 {% block content %}
 <html>
-	<head>
-		<meta name="viewport" content="width=device-width,initial-scale=1"/>
-		<title>Bia: Find a dinner buddy</title>
-		<link rel="icon" type="image/png" href="https://i.ibb.co/SdxwqHd/Untitled-design-1-removebg-preview.png"/>
-		<link rel="stylesheet" href="style.css">
-	</head>
-	<body>
-		<h1><center>Profile</center></h1>
-		<div>
-			<div>
-                <img alt="{{ name }}'s profile picture" class=".center" src="{{ imgSource }}"></img>
-			</div>
-            <h1>{{ name  }}</h1>
-            <p>Groups: {{ groups }}</p>
-	    </div>
-        <div id="groupSearch">
-            
-            <form name="groupSearch_form"> 
-                <label for="groupQuery">Search groups:</label>
-                <input type="text" name="groups" class="field">
-            </form>
-        </div>
-	<button class="button2" align="center">Log Out</button>
+    <script>
 
+    </script>
+	<form action="/">
+		<button class="button1" align="left">Back</button>
+	</form>
+	<body id="main">
+		<div id ="profileCard">
+			<h1><center>Profile</center></h1>
+			<div>
+				<div>
+					<img alt="{{ name }}'s profile picture" class=".center" src="{{ imgSource }}"></img>
+				</div>
+				<h1>{{ name  }}</h1>
+				<p>{{ groups }}</p>
+			</div>;
+			<div id="groupSearch">
+                    <input type='text' onchange="getGroups(this.value);" ();" />
+
+				<form name="groupSearch_form" onclick=getGroups()> 
+					<label for="groupQuery">Search groups:</label>
+                    <input type="text" name="groups" class="searchBar" onchange="getGroups()">
+
+				</form>
+
+			</div>
+            <div id="groupSearchResults">
+
+            </div>
+            <br />
+            <form name="logOut" onclick=logout()>
+				<button class="button2" align="center">Log Out</button>
+			</form>
+		</div>
 	</body>
 </html>
 {% endblock %}

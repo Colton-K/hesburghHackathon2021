@@ -26,28 +26,37 @@ $("form[name=signup_form").submit(function(e) {
   e.preventDefault();
 });
 
-// $("form[name=groupSearch_form").submit(function(e) {
+function logout(event) {
+    document.cookie="session_id=logged_out";
+    console.log("logging out")
+    window.location.hred = "/";
+}
+
+function getGroups(value) {
+    // display("Value = " + value);
+    // console.log("in get groups")
+    var workingDiv = document.getElementById("groupSearchResults");
+    var results = "Results: <br>";
+    //results += value; 
+
+    $.ajax({
+      url: "/user/getGroups",
+      type: "POST",
+      data: value,
+      dataType: "json",
+      success: function(resp) {
+        results += resp.error;
+        workingDiv.innerHTML = results 
+      },
+      error: function(resp) {
+        $error.text(resp.responseJSON.error).removeClass("error--hidden");
+      }
+    });
     
-//     var $form = $(this);
-//     var $error = $form.find(".error");
-//     var data = $form.serialize();
 
-//     $.ajax({
-//         url: "/user/getGroups"
-//         type: "POST",
-//         data: data,
-//         dataType: "json",
-//         success: function(resp) {
-//             setCookie("SameSite", "Strict");
-//             // window.location.href = "/";
-//     },
-//     error: function(resp) {
-//         $error.text(resp.responseJSON.error).removeClass("error--hidden");
-//     }
-//     });
-
-//     e.preventDefault();
-// });
+    // workingDiv.insertAdjacentHTML("afterend", value)
+    // workingDiv.insertAdjacentHTML("afterend", "<br>")
+};
 
 $("form[name=login_form").submit(function(e) {
 

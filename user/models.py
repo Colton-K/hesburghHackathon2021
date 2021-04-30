@@ -3,7 +3,7 @@
 from flask import Flask, jsonify, request, session, redirect
 import uuid
 from passlib.hash import pbkdf2_sha256
-from user import users, sessions
+from user import users, sessions, groups
 
 class User:
 
@@ -51,6 +51,6 @@ class User:
 
 
     def getGroups(self):
-        return
-
         
+
+        return jsonify({ "error": "Invalid login credentials" }), 200
