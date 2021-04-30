@@ -54,11 +54,27 @@ class User:
         userId = request.cookies.get("user_id")
         return jsonify(groups.getUserGroups(userId)), 200
 
+    def addGroup(self):
+        userId = request.cookies.get("user_id")
+        groupName = dict(request.form)['name']
+
+        groupId = groups.searchGroups(groupName)[0]['group_id']        
+        r = groups.joinGroup(userId, groupId)
+        print(groupId, "\n", r)
+        return jsonify(groups.getUserGroups(userId)), 201
+
     def searchGroups(self):
         userId = request.cookies.get("user_id")
         data = dict(request.form)['query']
         print(data)
         return jsonify(groups.searchGroups(data, userId))
+
+    def createGroup(self):
+        userId = request.cookies.get("user_id")
+        name = dict(request.form)['groupName']
+        r = groups.createGroup(name, userId, publicVisible=True, publicJoinable=True)
+        print("creation:",r)
+        return jsonify(groups.searchGroups(name, userId)), 201
 
     def getParties(self):
         userId = request.cookies.get("user_id")
