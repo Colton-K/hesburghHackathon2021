@@ -121,3 +121,15 @@ br {
 .searchBar {
     border-radius: 10px;
 }
+
+.logo {
+    position: absolute;
+    max-width: none;
+    z-index: 1000;
+    width: 100px;
+    height: 100px;
+}
+
+.profilePic {
+    width: 30%;
+}
