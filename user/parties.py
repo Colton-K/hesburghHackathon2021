@@ -37,27 +37,34 @@ def createParty(leaderId,
     leader['parties'].append(partyId)
 
     notification = {
-        'partyId' : partyId,
+        'party_id' : partyId,
         'name' : name,
-        'leader' : leader,
+        'leader' : leaderId,
         'groups' : groups_,
         'location' : location,
         'time' : time_,
         'public' : public,
-        'auto_join' : autoJoin
+        'auto_join' : autoJoin,
+        'n_members' : 1
     }
 
+    print(notification)
+
     if public:
-        pass
-        #notifyAll
+        if _messages:
+            from user import messaging
+            messaging.sendMessage('party_created', notification)
+        
     else:
         usersToNotify = set()
         for groupId in groups_:
             group = groups.getGroupDocument(groupId)
             if group.exists():
-                usersToNotify &= group['members'].get()
+                usersToNotify &= set(group['members'].get())
 
-        # TODO -  notify each member
+        if _messages:
+            from user import messaging
+            messaging.sendMessage('party_created', notification, usersToNotify)
     
     return {'result' : 'success', 'party_id' : partyId}
 
@@ -124,6 +131,14 @@ def joinPartyRequest(userId, partyId):
     if invited or party['auto_join'].get():
         party['members'].append(userId)
         user['parties'].append(partyId)
+
+        if _messages:
+            from user import messaging
+
+            messaging.sendMessage('party_accept', {
+                'party_id' : partyId
+            }, [userId])
+
         notifyUserJoined(userId, partyId)
 
         return {'result' : 'success', 'message' : 'User joined party'}
@@ -172,7 +187,7 @@ def acceptJoinParty(leaderId, userId, partyId, decline = False):
 
             messaging.sendMessage('party_decline', {
                 'party_id' : partyId
-            }, [party['leader'].get()])
+            }, [userId])
         
         return {'result' : 'success'}
 
@@ -184,7 +199,7 @@ def acceptJoinParty(leaderId, userId, partyId, decline = False):
 
         messaging.sendMessage('party_accept', {
             'party_id' : partyId
-        }, [party['leader'].get()])
+        }, [userId])
 
     notifyUserJoined(userId, partyId)
     return {'result' : 'success'}
@@ -202,7 +217,7 @@ def notifyUserJoined(userId, partyId):
         messaging.sendMessage('party_new_member', {
             'party_id' : partyId,
             'n_members' : len(members)
-        }, [members])
+        }, members)
 
 def partyChat(userId, partyId, message):
 

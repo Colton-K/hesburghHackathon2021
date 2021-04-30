@@ -31,3 +31,12 @@ def createParty():
 @app.route('/user/join_party', methods=['POST'])
 def joinParty():
     return User().joinParty()
+
+@app.route('/user/accept_user', methods=['POST'])
+def acceptUser():
+    return User().acceptUser()
+
+@app.route('/user/decline_user', methods=['POST'])
+def declineUser():
+    return User().declineUser()
+

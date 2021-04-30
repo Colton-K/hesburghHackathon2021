@@ -62,13 +62,16 @@ class User:
         userId = request.cookies.get("user_id")
         data = dict(request.form)
         public = data['public'] == 'true'
+        autoJoin = data['auto_join'] == 'true'
+        name = data['name']
 
         groups_ = []
         for key in data:
-            if key != 'public':
+            if key != 'public' and key != 'name' and key != 'auto_join':
                 groups_.append(key)
 
-        result = parties.createParty(userId, groups_, None, None, public = public)
+        result = parties.createParty(userId, groups_, None, None,
+            public = public, autoJoin = autoJoin, name = name)
         return jsonify(result), 200
     
     def joinParty(self):
@@ -77,4 +80,24 @@ class User:
         partyId = data['party_id']
 
         result = parties.joinPartyRequest(userId, partyId)
+        return jsonify(result), 200
+
+    def acceptUser(self):
+        leaderId = request.cookies.get("user_id")
+        data = dict(request.form)
+        partyId = data['party_id']
+        userId = data['user_id']
+
+        result = parties.acceptJoinParty(leaderId, userId, partyId)
+        return jsonify(result), 200
+
+    def declineUser(self):
+        leaderId = request.cookies.get("user_id")
+        data = dict(request.form)
+        partyId = data['party_id']
+        userId = data['user_id']
+
+        print(data)
+
+        result = parties.declineJoinParty(leaderId, userId, partyId)
         return jsonify(result), 200

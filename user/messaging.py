@@ -46,8 +46,6 @@ class ConnectionDispatcher:
 
         self.connectedUsers.add(userId)
 
-        print(self.connections)
-
     def removeConnection(self, userId, connection):
         self.connections[userId].remove(connection)
 
@@ -55,8 +53,6 @@ class ConnectionDispatcher:
             self.connectedUsers.remove(userId)
 
     async def handler(self, websocket, path):
-        print("CONN", self.connections)
-
         try:
             credentials = await websocket.recv()
             credentials = json.loads(credentials)

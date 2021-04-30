@@ -77,9 +77,7 @@
     <h1>Dine Now page</h1>
 </html>
   <div class="card-wrapper" id='setup-party'>
-
     <div class="card">
-
       <h1 class="center">Available Parties</h1>
       
       <div id="parties">
@@ -87,49 +85,80 @@
             <h2>Join Random Party</h2>
         </button>
       </div>
-      
-      
     </div>
 
     <div class="card">
-
       <h1 class="center">Create Party</h1>
-
       <form name="create_party" id="create_party">
+          
+        <input id="party-name-entry" type="text" name="name" class="field"
+        placeholder="Name (optional)">
 
         <label class="container"> Public
             <input type="checkbox" id="make_public">
             <span class="checkmark"></span>
         </label>
 
+        <label class="container"> Auto Accept
+            <input type="checkbox" id="auto_join">
+            <span class="checkmark"></span>
+        </label>
+
         <label id="add_groups">Add Groups</label>
 
-        <input type="submit" value="Create Group" class="btn">
+        <input type="submit" value="Create Party" class="btn">
       
       </form>
-      
     </div>
-  
   </div>
 
   <div id='wait-on-party' style="display: none">
     <h1 id='wait-on-party-title'></h1>
   </div>
 
-  <div id='manage-party' style="display: none">
-    <h1>Managing Party</h1>
-    <div class="card-wrapper">
-        <div id='member-requests' class='card'>
-            <h2 style='padding-top: 40px;'>Members and Join Requests</h2>
+    <div id='manage-party' style="display: none">
+        <h1>Managing Party</h1>
+        <h2 id='party-count-manager'>1 Member</h2>
+        <div class="card-wrapper">
+            <div id='member-requests' class='card'>
+                <h2 style='padding-top: 40px;'>Members and Join Requests</h2>
+            </div>
+            <div id='party-chat-manager' class='card'>
+                <h2 style='padding-top: 40px;'>Party Chat</h2>
+            </div>
         </div>
-        
     </div>
-</div>
+
+    <div id='party-joined' style="display: none">
+        <h1 id='party-joined-title'></h1>
+        <h2 id='party-count'></h2>
+        <div class="card-wrapper">
+            <div id='party-chat' class='card'>
+                <h2 style='padding-top: 40px;'>Party Chat</h2>
+            </div>
+        </div>
+    </div>
+
 <script>
 var parties = [];
 var groups = [];
 var selectedParty = null;
 var partyOwner = false;
+
+var _partyName = null;
+function partyName() {
+    if (_partyName) {
+        return _partyName;
+    }
+    if (selectedParty) {
+        for (var i = 0; i < parties.length; i++) {
+            if (parties[i].party_id == selectedParty) {
+                return parties[i].name;
+            }
+        }
+    }
+    return "Party";
+}
 
 function waitOnParty(partyId, message) {
     selectedParty = partyId;
@@ -175,31 +204,35 @@ function ajaxOnSuccess(endpoint, func, data) {
     });
 }
 
+function addPartyInfo(party) {
+    var button = document.createElement('button');
+
+    var partyLoc = party.location;
+
+    if (party.name == "Party") {
+        button.innerHTML = "<h2>" + party.name +  "with "
+            + party.n_members + " member(s)<h2>";
+    }
+    else {
+        button.innerHTML = "<h2>" + party.name +  " ("
+            + party.n_members + " member(s))<h2>";
+    }
+    button.style.width = "100%";
+    button.style.marginTop = "10px";
+    button.id = party.party_id;
+    button.onclick = (e) => {
+        var partyId = e.target.id;
+        selectedParty = partyId;
+        attemptJoinParty(partyId);
+    }
+
+    document.getElementById('parties').appendChild(button);
+}
+
 ajaxOnSuccess('/user/get_parties', function(resp) {
     parties = resp;
     for (var i = 0; i < parties.length; i++) {
-        var party = parties[i];
-
-        var button = document.createElement('button');
-
-        var partyLoc = party.location;
-
-        if (party.name == "Party") {
-            button.innerHTML = "<h2>" + party.name +  "with " + party.n_members + " member(s)<h2>";
-        }
-        else {
-            button.innerHTML = "<h2>" + party.name +  " (" + party.n_members + " member(s))<h2>";
-        }
-        button.style.width = "100%";
-        button.style.marginTop = "10px";
-        button.id = party.party_id;
-        button.onclick = (e) => {
-            var partyId = e.target.id;
-            selectedParty = partyId;
-            attemptJoinParty(partyId);
-        }
-
-        document.getElementById('parties').appendChild(button)
+        addPartyInfo(parties[i]);
     }
 });
 
@@ -226,13 +259,16 @@ $("form[name=create_party").submit(function(e) {
     e.preventDefault();
     e.stopImmediatePropagation();
 
-    var data = "";
-    if (document.getElementById('make_public').value == "on") {
-        data = "public=true";
+
+    var data = "public=" + document.getElementById('make_public').value;
+    data += "&auto_join=" + document.getElementById('auto_join').value;
+
+    var partyName_ = document.getElementById('party-name-entry').value;
+    if (partyName_ == "") {
+        partyName_ = "Party"
     }
-    else {
-        data = "public=false";
-    }
+    data += "&name=" + partyName_;
+
 
     for (var i = 0; i < groups.length; i++) {
         if (document.getElementById(groups[i].group_id).value == "on") {
@@ -247,6 +283,7 @@ $("form[name=create_party").submit(function(e) {
         dataType: "json",
         success: function(resp) {
             if (resp.result == 'success') {
+                partyName = partyName_;
                 selectedParty = resp.party_id;
                 partyOwner = true;
                 manageParty(resp.party_id);
@@ -262,22 +299,23 @@ $("form[name=create_party").submit(function(e) {
 function acceptUser(e) {
     var user_id = e.target.id.slice(1);
     var data = 'user_id=' + user_id + '&party_id=' + selectedParty;
-    ajaxOnSuccess('/users/accept_user', () => {
+    ajaxOnSuccess('/user/accept_user', () => {
         document.getElementById('r' + user_id).remove();
-    })
+    }, data);
 }
 
 function declineUser(e) {
     var user_id = e.target.id.slice(1);
     var data = 'user_id=' + user_id + '&party_id=' + selectedParty;
-    ajaxOnSuccess('/users/decline_user', () => {
+    ajaxOnSuccess('/user/decline_user', (resp) => {
+        console.log(resp);
         document.getElementById('r' + user_id).remove();
-    })
+    }, data);
 }
 
 registerListener('party_request', (info) => {
 
-    var id = selectedParty;
+    var id = info.user_id;
     var node = document.createElement('div');
     node.innerHTML = `
         <h2>` + info.name + `<h2>
@@ -289,10 +327,38 @@ registerListener('party_request', (info) => {
     node.style.background = '#d0f0d0';
     node.id = 'r' + id;
 
+    document.getElementById('member-requests').appendChild(node);
     document.getElementById('a' + id).onclick = acceptUser;
     document.getElementById('d' + id).onclick = declineUser;
+});
 
-    document.getElementById('member-requests').appendChild(node);
+registerListener('party_accept', (info) => {
+    document.getElementById('wait-on-party').style.display = "none";
+    document.getElementById('party-joined').style.display = "inherit";
+
+    var title = document.getElementById('wait-on-party');
+    if (partyName() != "Party") {
+        title = "You have joined " + partyName() + "!"
+    }
+    else {
+        title = "You have joined a party!"
+    }
+});
+
+registerListener('party_decline', (info) => {
+    window.location.href = "/dineNow";
+});
+
+registerListener('party_created', (info) => {
+    addPartyInfo(info);
+    parties.push(info);
+});
+
+registerListener('party_new_member', (info) => {
+    var nMembers = info.n_members;
+
+    document.getElementById('party-count').innerHTML = nMembers + ' Members';
+    document.getElementById('party-count-manager').innerHTML = nMembers + ' Members';
 });
 
 
