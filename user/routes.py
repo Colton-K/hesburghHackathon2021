@@ -16,9 +16,18 @@ def signout():
 def login_():
     return User().login()
 
+@app.route('/user/addGroup', methods=['POST'])
+def addGroup():
+    return User().addGroup()
+
+# not currently working
 @app.route('/user/getGroups', methods=['POST'])
 def getGroups():
     return User().getGroups()
+
+@app.route('/user/createGroup', methods=['POST'])
+def createGroup():
+    return User().createGroup()
 
 @app.route('/user/searchGroups', methods=['POST'])
 def searchGroups():

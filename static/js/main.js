@@ -33,8 +33,7 @@ function logout(event) {
 }
 
 function searchGroups(value) {
-    // display("Value = " + value);
-    // console.log("in get groups")
+    console.log(value)
     var workingDiv = document.getElementById("groupSearchResults");
     var results = "Results: <br>";
     //results += value; 
@@ -51,9 +50,30 @@ function searchGroups(value) {
         console.log(resp)
         var len = resp.length;
         console.log(len)
-        for (var i = 0; i < len; i++) {
-            // console.log(resp[i]);
-            results += resp[i].name
+        if (len == 0) {
+                results = "<p align=\"left\">No matching groups found, create a new group below:</p>"
+            results += `
+				<div class="row">
+					<div class="wideColumn">
+						<input type='text' id="groupInput" onchange="searchGroups(this.value);" ();" />
+						<form name="groupSearch_form" onclick=searchGroups(groupInput.value)> </form>
+					</div>
+					<div class="thinColumn">
+						<button class="button3" onclick="createGroup(groupInput.value)">Create Group</button>
+					</div>
+				</div>
+                `
+
+        }
+        else {
+            for (var i = 0; i < len; i++) {
+                // console.log(resp[i]);
+                results += "<p>"
+                results += resp[i].name
+                results += "<button onclick=\"addGroup(\'"
+                results += resp[i].name
+                results += "\')\">Add Group</button></p>"
+            }
         }
         workingDiv.innerHTML = results;
       },
@@ -65,6 +85,46 @@ function searchGroups(value) {
 
     // workingDiv.insertAdjacentHTML("afterend", value)
     // workingDiv.insertAdjacentHTML("afterend", "<br>")
+};
+
+function addGroup(groupName) {
+    // console.log("groupName: " + groupName)
+    
+    $.ajax({
+        url: "/user/addGroup",
+        type: "POST",
+        data: {
+            'name' : groupName
+        },
+        dataType: "json",
+        success: function(resp) {
+            console.log("resp:" + resp)
+            window.location.href = "/profile";
+        },
+        error: function(resp) {
+            
+        }
+    })
+}
+
+// TODO: Implement this correctly!
+function createGroup(groupName) {
+    console.log(groupName)
+
+    $.ajax({
+        url:"/user/createGroup",
+        type: "POST",
+        data: {
+            "groupName" : groupName
+        },
+        dataType: "json",
+        success: function(resp) {
+            console.log(resp)
+        },
+        error: function(resp) {
+            // $error.text(resp.responseJSON.error).removeClass("error--hidden");
+        }
+    });
 };
 
 $("form[name=login_form").submit(function(e) {
