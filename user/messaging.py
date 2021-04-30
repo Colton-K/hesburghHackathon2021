@@ -5,6 +5,7 @@ import threading
 import json
 from bia import getIP
 from user import sessions
+import os
 
 class Connection:
 
@@ -45,6 +46,8 @@ class ConnectionDispatcher:
 
         self.connectedUsers.add(userId)
 
+        print(self.connections)
+
     def removeConnection(self, userId, connection):
         self.connections[userId].remove(connection)
 
@@ -52,6 +55,7 @@ class ConnectionDispatcher:
             self.connectedUsers.remove(userId)
 
     async def handler(self, websocket, path):
+        print("CONN", self.connections)
 
         try:
             credentials = await websocket.recv()
@@ -79,7 +83,7 @@ class ConnectionDispatcher:
                 connection.send(topic, message)
 
     def sendSome(self, users, topic, message):
-        sendUsers = self.connectedUsers & users
+        sendUsers = set(self.connections.keys()) & users
         for userId in sendUsers:
             for connection in self.connections[userId]:
                 connection.send(topic, message)
@@ -110,4 +114,5 @@ def runServer():
     _loop.run_until_complete(server)
     _loop.run_forever()
 
-threading.Thread(target = runServer).start()
+if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+    threading.Thread(target = runServer).start()

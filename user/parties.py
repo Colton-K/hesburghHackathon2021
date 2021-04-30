@@ -4,12 +4,15 @@ import time
 
 from user import users, groups
 
+_messages = True
+
 def createParty(leaderId,
     groups_,
     location,
     time_ = None, # a unix timestamp; if None, will replace with current time
     public = False,
-    autoJoin = False):
+    autoJoin = False,
+    name = "Party"):
 
     if time_ is None:
         time_ = int(time.time())
@@ -17,6 +20,7 @@ def createParty(leaderId,
     partyId = secrets.token_hex(16)
     partiesCollection.new({
         'party_id' : partyId,
+        'name' : name,
         'leader' : leaderId,
         'groups' : groups_,
         'location' : location,
@@ -34,6 +38,7 @@ def createParty(leaderId,
 
     notification = {
         'partyId' : partyId,
+        'name' : name,
         'leader' : leader,
         'groups' : groups_,
         'location' : location,
@@ -129,7 +134,14 @@ def joinPartyRequest(userId, partyId):
         
         party['requests'].append(userId)
         user['party_requests'].append(partyId)
-        # TODO - notify party leader
+        
+        if _messages:
+            from user import messaging
+
+            messaging.sendMessage('party_request', {
+                'user_id' : userId,
+                'name' : user['name'].get()
+            }, [party['leader'].get()])
 
         return {'result' : 'success', 'message' : 'Join request made. Waiting on party leader'}
 
@@ -155,13 +167,25 @@ def acceptJoinParty(leaderId, userId, partyId, decline = False):
     party['requests'].remove(userId)
     user['party_requests'].remove(partyId)
     if decline:
-        # TODO - notify user
+        if _messages:
+            from user import messaging
+
+            messaging.sendMessage('party_decline', {
+                'party_id' : partyId
+            }, [party['leader'].get()])
+        
         return {'result' : 'success'}
 
     party['members'].append(userId)
     user['parties'].append(partyId)
 
-    # TODO - notify user
+    if _messages:
+        from user import messaging
+
+        messaging.sendMessage('party_accept', {
+            'party_id' : partyId
+        }, [party['leader'].get()])
+
     notifyUserJoined(userId, partyId)
     return {'result' : 'success'}
 
@@ -170,9 +194,15 @@ def declineJoinParty(leaderId, userId, partyId):
     return acceptJoinParty(leaderId, userId, partyId, decline = True)
 
 def notifyUserJoined(userId, partyId):
+    if _messages:
+        from user import messaging
 
-    # TODO - notify!
-    pass
+        members = partiesCollection.where('party_id', partyId)['members'].get()
+
+        messaging.sendMessage('party_new_member', {
+            'party_id' : partyId,
+            'n_members' : len(members)
+        }, [members])
 
 def partyChat(userId, partyId, message):
 
@@ -240,6 +270,7 @@ def removeUserFromParties(userId):
 def getJoinableParties(userId, location = None):
     projection = {
         '_id' : 0,
+        'name' : 1,
         'party_id' : 1,
         'groups' : 1,
         'location' : 1,
