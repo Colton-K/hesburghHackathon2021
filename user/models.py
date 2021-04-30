@@ -70,13 +70,16 @@ class User:
         public = data['public'] == 'true'
         autoJoin = data['auto_join'] == 'true'
         name = data['name']
+        location = data['location']
+
+        print("LOCATION", location)
 
         groups_ = []
         for key in data:
-            if key != 'public' and key != 'name' and key != 'auto_join':
+            if key not in {'public', 'name', 'auto_join', 'location'}:
                 groups_.append(key)
 
-        result = parties.createParty(userId, groups_, None, None,
+        result = parties.createParty(userId, groups_, location, None,
             public = public, autoJoin = autoJoin, name = name)
         return jsonify(result), 200
     

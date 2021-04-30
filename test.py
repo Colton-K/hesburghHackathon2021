@@ -14,4 +14,4 @@ user3 = users.createUser('test3', 'test', 'test3@test.com')
 group1 = groups.createGroup("Test Univeristy", user2, '@test.com', publicVisible=True)['group_id']
 groups.joinGroup(user1, group1)
 
-parties.createParty(user2, [], None, public=True, name = "CSEPEGs")
+parties.createParty(user2, [], "NDH", public=True, name = "CSEPEGs")

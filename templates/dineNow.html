@@ -81,7 +81,7 @@
       <h1 class="center">Available Parties</h1>
       
       <div id="parties">
-        <button id="parties_random" style="width: 100%">
+        <button id="parties-random" style="width: 100%">
             <h2>Join Random Party</h2>
         </button>
       </div>
@@ -92,7 +92,13 @@
       <form name="create_party" id="create_party">
           
         <input id="party-name-entry" type="text" name="name" class="field"
-        placeholder="Name (optional)">
+        placeholder="Name (optional)" style="margin-bottom: 10px;">
+
+        <select name="location" class="field" id="select-location"
+            style="width: 100%; margin-bottom: 10px;">
+            <option value="NDH">NDH</option>
+            <option value="SDH">SDH</option>
+        </select>
 
         <label class="container"> Public
             <input type="checkbox" id="make_public">
@@ -219,15 +225,35 @@ function addPartyInfo(party) {
     var partyLoc = party.location;
 
     if (party.name == "Party") {
-        button.innerHTML = "<h2>" + party.name +  " with "
-            + party.n_members + " member(s)<h2>";
+        button.innerHTML = "<h3 style='color: black'> Party @ "
+            + partyLoc + "</h3>";
     }
     else {
-        button.innerHTML = "<h2>" + party.name +  " ("
-            + party.n_members + " member(s))<h2>";
+        button.innerHTML = "<h3 style='color: black'>" +
+            party.name + " - " + partyLoc + "</h3>";
     }
+
+    var currTime = new Date().getTime();
+    if (party.time * 1000 <= currTime) {
+        button.innerHTML += "Meeting Now"
+    }
+    else {
+        var date = new Date();
+        date.setTime(party.time * 1000);
+
+        var hours = date.getHours();
+        if (hours > 12) {hours -= 12};
+        if (hours == 0) {hours = 0};
+
+        var minutes = String(date.getMinutes());
+        if (minutes.length == 1) {minutes = "0" + minutes;}
+
+        button.innerHTML += "Meeting at " + hours + ":" + minutes;
+    }
+
     button.style.width = "100%";
     button.style.marginTop = "10px";
+    button.style.color = 'black';
     button.id = party.party_id;
     button.onclick = (e) => {
         var partyId = e.target.id;
@@ -272,12 +298,14 @@ $("form[name=create_party").submit(function(e) {
     var data = "public=" + document.getElementById('make_public').checked;
     data += "&auto_join=" + document.getElementById('auto_join').checked;
 
+    var location = document.getElementById('select-location').value;
+    data += "&location=" + location;
+
     var partyName_ = document.getElementById('party-name-entry').value;
     if (partyName_ == "") {
         partyName_ = "Party"
     }
     data += "&name=" + partyName_;
-
 
     for (var i = 0; i < groups.length; i++) {
         if (document.getElementById(groups[i].group_id).value == "on") {
@@ -304,6 +332,18 @@ $("form[name=create_party").submit(function(e) {
         }
     });
 });
+
+document.getElementById('parties-random').onclick = () => {
+    var n = parties.length;
+    if (n > 0) {
+        var i = Math.floor(Math.random() * n);
+        var partyId = parties[i].party_id;
+        attemptJoinParty(partyId);
+    }
+    else {
+        // Do nothing; could try to create party
+    }
+}
 
 function acceptUser(e) {
     var user_id = e.target.id.slice(1);
