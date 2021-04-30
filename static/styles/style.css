@@ -28,19 +28,19 @@ h2 {
     font-size: 150%;
     color: black;
     margin: 10px;
-    max-width: 95%;
+    max-width: 100%;
 }
 h3 {
     font-family: Sans-serif;
     font-size: 125%;
     color: gray;
     margin: 5px;
-    max-width: 95%;
+    max-width: 100%;
 }
 p {
     line-height: normal;
     margin: 2px;
-    max-width: 95%;
+    max-width: 100%;
 }
 img {
     margin: 10px 10px 10px 10px;
