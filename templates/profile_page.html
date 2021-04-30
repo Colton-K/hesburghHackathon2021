@@ -20,15 +20,18 @@
 				<p>{{ groups }}</p>
 			</div>
 			<div id="groupSearch">
-                    <input type='text' onchange="getGroups(this.value);" ();" />
+				<div class="row">
+					<div class="wideColumn">
+						<input type='text' id="groupInput" onchange="getGroups(this.value);" ();" />
+						<form name="groupSearch_form" onclick=getGroups()> </form>
+					</div>
+					<div class="thinColumn">
+						<button class="button3" onclick="getGroups()">Search</button>
+					</div>
+				</div>
+			</div>	
 
-					<form name="groupSearch_form" onclick=getGroups()> 
-					<label for="groupQuery">Search groups:</label>
-                    <input type="text" name="groups" class="searchBar" onchange="getGroups()">
-
-				</form>
-
-			</div>
+				
             <div id="groupSearchResults">
 
             </div>
