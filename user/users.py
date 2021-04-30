@@ -3,6 +3,7 @@ from database.database import db
 from database.search import search
 import secrets
 import hashlib
+import os
 
 class Error(Exception):
     pass
@@ -118,6 +119,10 @@ def searchUsers(name, limit = 20):
     )
 
     return search(results, name, "name", limit)
+
+def getProfilePicturePath(userId):
+    number = int(userId[:8], 16) % 10
+    return "user/profile_picture/person{}.svg".format(number)
 
 _userHooks = {}
 
