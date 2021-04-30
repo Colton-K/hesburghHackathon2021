@@ -44,3 +44,6 @@ def acceptUser():
 def declineUser():
     return User().declineUser()
 
+@app.route('/user/party_chat', methods=['POST'])
+def partyChat():
+    return User().partyChat()

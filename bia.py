@@ -5,6 +5,7 @@ from functools import wraps
 import os
 import socket
 import requests
+from user import messaging
 
 app = Flask(__name__)
 app.secret_key = os.urandom(16)
@@ -39,7 +40,7 @@ def loginRequired(f):
     return wrap
 
 
-from user import routes, messaging, sessions, users, groups
+from user import routes, sessions, users, groups
 
 """
     Home page

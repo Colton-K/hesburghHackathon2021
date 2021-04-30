@@ -74,7 +74,7 @@
 } 
 </style>
 <html>
-    <h1>Dine Now page</h1>
+    <center><h1>Dine Now page</h1></center>
 </html>
   <div class="card-wrapper" id='setup-party'>
     <div class="card">
@@ -117,7 +117,7 @@
   </div>
 
     <div id='manage-party' style="display: none">
-        <h1>Managing Party</h1>
+        <h1 id='manage-party-title'>Managing Party</h1>
         <h2 id='party-count-manager'>1 Member</h2>
         <div class="card-wrapper">
             <div id='member-requests' class='card'>
@@ -125,6 +125,8 @@
             </div>
             <div id='party-chat-manager' class='card'>
                 <h2 style='padding-top: 40px;'>Party Chat</h2>
+                <input id="chat-entry-1" type="text" name="name" class="field"
+                    placeholder="Enter chat message">
             </div>
         </div>
     </div>
@@ -135,6 +137,8 @@
         <div class="card-wrapper">
             <div id='party-chat' class='card'>
                 <h2 style='padding-top: 40px;'>Party Chat</h2>
+                <input id="chat-entry-2" type="text" name="name" class="field"
+                    placeholder="Enter chat message">
             </div>
         </div>
     </div>
@@ -170,7 +174,12 @@ function waitOnParty(partyId, message) {
 
 function manageParty(partyId) {
     document.getElementById('setup-party').style.display = "none";
+    document.getElementById('wait-on-party').style.display = "none";
     document.getElementById('manage-party').style.display = "inherit";
+
+    if (partyName() != "Party") {
+        document.getElementById('manage-party-title').innerHTML += " " + partyName();
+    }
 }
 
 function attemptJoinParty(partyId) {
@@ -210,7 +219,7 @@ function addPartyInfo(party) {
     var partyLoc = party.location;
 
     if (party.name == "Party") {
-        button.innerHTML = "<h2>" + party.name +  "with "
+        button.innerHTML = "<h2>" + party.name +  " with "
             + party.n_members + " member(s)<h2>";
     }
     else {
@@ -260,8 +269,8 @@ $("form[name=create_party").submit(function(e) {
     e.stopImmediatePropagation();
 
 
-    var data = "public=" + document.getElementById('make_public').value;
-    data += "&auto_join=" + document.getElementById('auto_join').value;
+    var data = "public=" + document.getElementById('make_public').checked;
+    data += "&auto_join=" + document.getElementById('auto_join').checked;
 
     var partyName_ = document.getElementById('party-name-entry').value;
     if (partyName_ == "") {
@@ -336,12 +345,12 @@ registerListener('party_accept', (info) => {
     document.getElementById('wait-on-party').style.display = "none";
     document.getElementById('party-joined').style.display = "inherit";
 
-    var title = document.getElementById('wait-on-party');
+    var title = document.getElementById('party-joined-title');
     if (partyName() != "Party") {
-        title = "You have joined " + partyName() + "!"
+        title.innerHTML = "You have joined " + partyName() + "!"
     }
     else {
-        title = "You have joined a party!"
+        title.innerHTML = "You have joined a party!"
     }
 });
 
@@ -361,7 +370,61 @@ registerListener('party_new_member', (info) => {
     document.getElementById('party-count-manager').innerHTML = nMembers + ' Members';
 });
 
+function chatEntry(event) {
+    if (event.keyCode == 13) {
+        data = "message=" + event.target.value + "&party_id=" + selectedParty;
 
+        ajaxOnSuccess('/user/party_chat', () => {}, data);
+        
+        event.target.value = "";
+    }
+}
+
+document.getElementById('chat-entry-1').addEventListener('keydown', chatEntry);
+document.getElementById('chat-entry-2').addEventListener('keydown', chatEntry);
+
+registerListener('party_chat', (info) => {
+    var user_id = getCookie('user_id');
+
+    var blurb1 = document.createElement('div');
+    blurb1.innerHTML = "<h4>" + info.message + "</h4>";
+    blurb1.style.padding = "10px";
+    blurb1.style.marginTop = "15px";
+    blurb1.style.width = "80%";
+    blurb1.style.borderRadius = "10px";
+
+    var blurb2 = document.createElement('div');
+    blurb2.innerHTML = "<h4>" + info.message + "</h4>";
+    blurb2.style.padding = "10px";
+    blurb2.style.marginTop = "15px";
+    blurb2.style.width = "80%";
+    blurb2.style.borderRadius = "10px";
+
+    if (user_id == info.user_id) {
+        blurb1.style.background = "#D0D0D0";
+        blurb1.style.float = "right";
+        blurb1.style.textAlign = "right";
+        blurb2.style.background = "#D0D0D0";
+        blurb2.style.float = "right";
+        blurb2.style.textAlign = "right";
+    }
+    else {
+        blurb1.style.background = "#D0D0FF";
+        blurb1.style.float = "left";
+        blurb1.style.textAlign = "left";
+        blurb2.style.background = "#D0D0FF";
+        blurb2.style.float = "left";
+        blurb2.style.textAlign = "left";
+        blurb1.innerHTML += info.name;
+        blurb2.innerHTML += info.name;
+    }
+
+    var before1 = document.getElementById('chat-entry-1');
+    var before2 = document.getElementById('chat-entry-2');
+
+    before1.parentNode.insertBefore(blurb1, before1.nextSibling);
+    before2.parentNode.insertBefore(blurb2, before2.nextSibling);
+});
 
 </script>
 

@@ -107,3 +107,12 @@ class User:
 
         result = parties.declineJoinParty(leaderId, userId, partyId)
         return jsonify(result), 200
+    
+    def partyChat(self):
+        userId = request.cookies.get("user_id")
+        data = dict(request.form)
+        partyId = data['party_id']
+        message = data['message']
+
+        result = parties.partyChat(userId, partyId, message);
+        return jsonify(result), 200

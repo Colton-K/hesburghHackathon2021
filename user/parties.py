@@ -48,8 +48,6 @@ def createParty(leaderId,
         'n_members' : 1
     }
 
-    print(notification)
-
     if public:
         if _messages:
             from user import messaging
@@ -60,7 +58,7 @@ def createParty(leaderId,
         for groupId in groups_:
             group = groups.getGroupDocument(groupId)
             if group.exists():
-                usersToNotify &= set(group['members'].get())
+                usersToNotify |= set(group['members'].get())
 
         if _messages:
             from user import messaging
@@ -229,9 +227,14 @@ def partyChat(userId, partyId, message):
     if userId not in members:
         return {'result' : 'failure', 'error' : 'User not in group'}
     
-    party['messages'].append(message)
-    
-    # TODO - notify!
+    if _messages:
+        from user import messaging
+
+        messaging.sendMessage('party_chat', {
+            'user_id' : userId,
+            'name' : users.getUserDocument(userId)['name'].get(),
+            'message' : message
+        }, members)
 
 def deleteParty(leaderId, partyId):
 
