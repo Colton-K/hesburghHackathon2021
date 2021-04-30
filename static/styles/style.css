@@ -82,6 +82,18 @@ br {
      border-radius:10px;
  }
 
+ .button3 {
+    z-index: 1000;
+    margin: 0 0 24px;
+    padding: 11px 30px 10px;
+    background-color: white;
+    text-decoration-color: white;
+    line-height: 12px;
+    width: 95%;
+    font-size: 90%;
+    font-family: Sans-serif;
+    border-radius:10px;
+}
  
 
 #main {
@@ -115,9 +127,24 @@ br {
     margin: auto;
 }
 
+#groupInput {
+    border-radius: 10px;
+    width: 95%;
+}
+
 .column {
     float: left;
     width: 50%;
+}
+
+.wideColumn {
+    float: left;
+    width: 70%;
+}
+
+.thinColumn {
+    float: left;
+    width: 30%;
 }
 
 .row:after {
@@ -141,3 +168,4 @@ br {
 .profilePic {
     width: 30%;
 }
+

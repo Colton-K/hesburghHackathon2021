@@ -87,7 +87,11 @@ def profile():
         g = "You do not belong to any groups."
     else:
         g = "Groups: "
-        g += groups.getUserGroups(userID).join("")
+        groupList = groups.getUserGroups(userID)
+        for group in groupList:
+            g += group['name']
+            g += ", "
+        g = g[:-2]
 
     profilePic = users.getUserInfo(userID) #['profilePic']
     #  profilePic = 'https://b-ingwersen.github.io/photos/self.jpg'

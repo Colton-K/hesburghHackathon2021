@@ -54,6 +54,12 @@ class User:
         userId = request.cookies.get("user_id")
         return jsonify(groups.getUserGroups(userId)), 200
 
+    def searchGroups(self):
+        userId = request.cookies.get("user_id")
+        data = dict(request.form)['query']
+        print(data)
+        return jsonify(groups.searchGroups(data, userId))
+
     def getParties(self):
         userId = request.cookies.get("user_id")
         return jsonify(parties.getJoinableParties(userId)), 200
