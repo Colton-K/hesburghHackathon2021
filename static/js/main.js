@@ -32,7 +32,7 @@ function logout(event) {
     window.location.hred = "/";
 }
 
-function getGroups(value) {
+function searchGroups(value) {
     // display("Value = " + value);
     // console.log("in get groups")
     var workingDiv = document.getElementById("groupSearchResults");
@@ -40,9 +40,11 @@ function getGroups(value) {
     //results += value; 
 
     $.ajax({
-      url: "/user/getGroups",
+      url: "/user/searchGroups",
       type: "POST",
-      data: value,
+      data: {
+        'query' : value
+      },
       dataType: "json",
       success: function(resp) {
         
@@ -50,8 +52,8 @@ function getGroups(value) {
         var len = resp.length;
         console.log(len)
         for (var i = 0; i < len; i++) {
-            console.log(resp[i]);
-            //results += resp[i]
+            // console.log(resp[i]);
+            results += resp[i].name
         }
         workingDiv.innerHTML = results;
       },

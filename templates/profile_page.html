@@ -22,11 +22,11 @@
 			<div id="groupSearch">
 				<div class="row">
 					<div class="wideColumn">
-						<input type='text' id="groupInput" onchange="getGroups(this.value);" ();" />
-						<form name="groupSearch_form" onclick=getGroups()> </form>
+						<input type='text' id="groupInput" onchange="searchGroups(this.value);" ();" />
+						<form name="groupSearch_form" onclick=searchGroups(groupInput.value)> </form>
 					</div>
 					<div class="thinColumn">
-						<button class="button3" onclick="getGroups()">Search</button>
+						<button class="button3" onclick="searchGroups(groupInput.value)">Search</button>
 					</div>
 				</div>
 			</div>	

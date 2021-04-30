@@ -20,6 +20,10 @@ def login_():
 def getGroups():
     return User().getGroups()
 
+@app.route('/user/searchGroups', methods=['POST'])
+def searchGroups():
+    return User().searchGroups()
+
 @app.route('/user/get_parties', methods=['POST'])
 def getParties():
     return User().getParties()
