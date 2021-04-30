@@ -195,6 +195,9 @@ def removeUserFromGroup(userId, groupId):
 
     return {'result' : 'success'}
 
+def getGroupDocument(groupId):
+    return groupsCollection.where('group_id', groupId)
+
 def removeUserFromAllGroups(userId):
     
     if not users.userExists(userId):
@@ -242,6 +245,22 @@ def searchGroups(groupName, userId = None, limit = 20):
     
     return search(results, groupName, 'name', limit)
 
+def getUserGroups(userId):
+    user = users.getUserDocument(userId)
+
+    userGroups = []
+    groupIds = user['groups'].get()
+    for groupId in groupIds:
+        group = getGroupDocument(groupId)
+        userGroups.append(
+            {
+                'group_id' : group['group_id'].get(),
+                'name' : group['name'].get(),
+                'n_members' : len(group['members'].get())
+            }
+        )
+    
+    return userGroups
 
 groupsCollection = db.collection('groups')
 users.registerHook('delete', removeUserFromAllGroups)
