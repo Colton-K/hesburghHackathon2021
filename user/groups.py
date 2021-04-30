@@ -85,6 +85,7 @@ def joinGroup(userId, groupId):
     if userId in invited:
         invited.remove(userId)
         group['invited'] = invited
+        user['invited'].remove(groupId)
             
     else:
         requiredEmail = group['required_email'].get()
@@ -97,9 +98,6 @@ def joinGroup(userId, groupId):
                 'result' : 'failure',
                 'error' : 'User does not have permission to join group'
             }
-    
-    if groupId in user['invited'].get():
-        user['invited'].remove(groupId)
     
     members = group['members'].get()
     if userId in members:
@@ -208,6 +206,9 @@ def removeUserFromAllGroups(userId):
         group = groupsCollection.where('group_id', groupId)
         group['invited'].remove(userId)
 
+def getGroupDocument(groupId):
+    return groupsCollection.where('group_id', groupId)
+
 def searchGroups(groupName, userId = None, limit = 20):
     projection = {
         '_id' : 0,
@@ -242,6 +243,22 @@ def searchGroups(groupName, userId = None, limit = 20):
     
     return search(results, groupName, 'name', limit)
 
+def getUserGroups(userId):
+    user = users.getUserDocument(userId)
+
+    userGroups = []
+    groupIds = user['groups'].get()
+    for groupId in groupIds:
+        group = getGroupDocument(groupId)
+        userGroups.append(
+            {
+                'group_id' : group['group_id'].get(),
+                'name' : group['name'].get(),
+                'n_members' : len(group['members'].get())
+            }
+        )
+    
+    return userGroups
 
 groupsCollection = db.collection('groups')
 users.registerHook('delete', removeUserFromAllGroups)
