@@ -76,7 +76,8 @@ br {
      background-color: white;
      text-decoration-color: white;
      line-height: 12px;
-     width: 50%;
+     max-width: 50%;
+     width: 750px;
      font-size: 20pt;
      font-family: Sans-serif;
      border-radius:10px;
@@ -106,6 +107,7 @@ br {
 #dhCard {
     margin: 0 auto;
     max-width: 75%;
+    width: 750px;
 	background: #ffffff;
 	border-radius: 20px;
     margin: auto;
