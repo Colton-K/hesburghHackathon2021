@@ -2,32 +2,56 @@
     padding: 7;
     margin: 0;
     box-sizing: border-box;
-	font-family: 'Press Start 2P', cursive;
-	text-shadow: 3px 3px #ff0000;
+	font-family: Sans-serif;
 }
 html{
     font-family: 'auto', Times, serif;
 }
 body {
-	background-image: url('https://th.bing.com/th/id/R6591c5c2985f635187fa72462466e973?rik=TvpO%2bODaYkTbsQ&riu=http%3a%2f%2fblubuilt.com.au%2fwp-content%2fuploads%2f2014%2f12%2fsample_1920_light_red-1200x800.png&ehk=YbjwiEhKwTxGFk8iPv%2fH6y5GWET5JXKdQZzw7TGW%2bMI%3d&risl=&pid=ImgRaw');
-	background-repeat: no-repeat;
+	background-color: #fa8072;
 	background-size: cover;
 	background-position: center;
 }
 div {
 	text-align: center;
-	size = "15"
+	size: "15";
 	padding: 15;
 }
 h1 {
-	font-family:verdana;
+	font-family:Sans-serif;
 	font-size:200%;
 	color:white;
+    text-shadow: 1px 1px #ff0000, -1px 1px #ff0000, -1px -1px #ff0000, 1px -1px #ff0000;
+}
+h2 {
+    font-family: Sans-serif;
+    font-size: 150%;
+    color: black;
+    margin: 10px;
+    max-width: 100%;
+}
+h3 {
+    font-family: Sans-serif;
+    font-size: 125%;
+    color: gray;
+    margin: 5px;
+    max-width: 100%;
+}
+p {
+    line-height: normal;
+    margin: 2px;
+    max-width: 100%;
 }
 img {
-	border-radius:50%;
+    margin: 10px 10px 10px 10px;
+	border-radius: 50%;
 	text-align:center;
+    max-width:80%;
 }
+br {
+    display: block;
+    margin: 10px 0;
+ }
 .center {
   display: block;
   margin-left: auto;
@@ -35,25 +59,115 @@ img {
   width: 50%;
 }
 .button1 {
+     z-index: 1000;
      line-height: 12px;
-     width: fit-content;
-     font-size: 8pt;
-     font-family: tahoma;
-     margin-top: 1px;
-     margin-right: 2px;
+     font-size: 30pt;
+     font-family: Sans-serif;
      position:absolute;
-     top:0;
-     right:0;
+     top:10px;
+     right:10px;
+     background-color: transparent;
+     border: none;
  }
  .button2 {
-  background-color: white;
-  text-decoration-color: white;
+     z-index: 1000;
+     margin: 0 0 24px;
+     padding: 11px 30px 10px;
+     background-color: white;
+     text-decoration-color: white;
      line-height: 12px;
-     width: 100%;
+     max-width: 50%;
+     width: 750px;
      font-size: 20pt;
-     font-family: tahoma;
-     margin-top: 1px;
-     margin-right: 2px;
-     position:absolute;
-     right:0;
+     font-family: Sans-serif;
+     border-radius:10px;
  }
+
+ .button3 {
+    z-index: 1000;
+    margin: 0 0 24px;
+    padding: 11px 30px 10px;
+    background-color: white;
+    text-decoration-color: white;
+    line-height: 12px;
+    width: 95%;
+    font-size: 90%;
+    font-family: Sans-serif;
+    border-radius:10px;
+}
+ 
+
+#main {
+    position: relative;
+    top: 20%;
+    border-radius: 20px;
+    margin:auto;
+}
+
+#dhCard {
+    margin: 0 auto;
+    max-width: 75%;
+    width: 750px;
+	background: #ffffff;
+	border-radius: 20px;
+    margin: auto;
+}
+
+.anyCard {
+    margin: 0 auto;
+    max-width: 75%;
+	background: #ffffff;
+	border-radius: 20px;
+    margin: auto;
+}
+
+#profileCard {
+    margin: 0 auto;
+    max-width: 75%;
+	background: #ffffff;
+	border-radius: 20px;
+    margin: auto;
+}
+
+#groupInput {
+    border-radius: 10px;
+    width: 95%;
+}
+
+.column {
+    float: left;
+    width: 50%;
+}
+
+.wideColumn {
+    float: left;
+    width: 70%;
+}
+
+.thinColumn {
+    float: left;
+    width: 30%;
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.searchBar {
+    border-radius: 10px;
+}
+
+.logo {
+    position: absolute;
+    max-width: none;
+    z-index: 1000;
+    width: 100px;
+    height: 100px;
+}
+
+.profilePic {
+    width: 30%;
+}
+

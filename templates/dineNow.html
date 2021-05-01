@@ -1,7 +1,509 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+ /* Customize the label (the container) */
+ .container {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background:rgb(221, 221, 221);
+  padding: 20px;
+  color: black;
+}
+
+/* Hide the browser's default checkbox */
+.container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  height: 25px;
+  width: 25px;
+  background-color: rgb(148, 148, 148);
+}
+
+/* On mouse-over, add a grey background color */
+.container:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.container input:checked ~ .checkmark {
+  background-color: #2196F3;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.container .checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+} 
+</style>
 <html>
-    <h1>Dine Now page</h1>
+    <center><h1>Dine Now</h1></center>
 </html>
+    <div class="card-wrapper" id='setup-party'>
+        <div class="card">
+            <h1 class="center">Available Parties</h1>
+            
+            <div id="parties">
+                <button id="parties-random" style="width: 100%">
+                    <h2>Join Random Party</h2>
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h1 class="center">Create Party</h1>
+            <form name="create_party" id="create_party">
+                
+                <input id="party-name-entry" type="text" name="name" class="field"
+                placeholder="Name (optional)" style="margin-bottom: 10px;">
+
+                <select name="location" class="field" id="select-location"
+                    style="width: 100%; margin-bottom: 10px;">
+                    <option value="NDH">NDH</option>
+                    <option value="SDH">SDH</option>
+                </select>
+
+                <label class="container"> Public
+                    <input type="checkbox" id="make_public">
+                    <span class="checkmark"></span>
+                </label>
+
+                <label class="container"> Auto Accept
+                    <input type="checkbox" id="auto_join">
+                    <span class="checkmark"></span>
+                </label>
+
+                <div id='create-party-groups'>
+                    <label id="add_groups">Add Groups</label>
+                </div>
+
+                <input type="submit" value="Create Party" class="btn">
+            </form>
+        </div>
+    </div>
+
+    <div id='wait-on-party' style="display: none">
+        <h1 id='wait-on-party-title'></h1>
+    </div>
+
+    <div id='manage-party' style="display: none">
+        <h1 id='manage-party-title'>Managing Party</h1>
+        <h2 id='party-count-manager'>1 Member</h2>
+        <div class="card-wrapper">
+            <div id='member-requests' class='card'>
+                <h2 style='padding-top: 40px;'>Members and Join Requests</h2>
+            </div>
+            <div id='party-chat-manager' class='card'>
+                <h2 style='padding-top: 40px;'>Party Chat</h2>
+                <input id="chat-entry-1" type="text" name="name" class="field"
+                    placeholder="Enter chat message">
+            </div>
+        </div>
+    </div>
+
+    <div id='party-joined' style="display: none">
+        <h1 id='party-joined-title'></h1>
+        <h2 id='party-count'></h2>
+        <div class="card-wrapper">
+            <div id='party-chat' class='card'>
+                <h2 style='padding-top: 40px;'>Party Chat</h2>
+                <input id="chat-entry-2" type="text" name="name" class="field"
+                    placeholder="Enter chat message">
+            </div>
+        </div>
+    </div>
+
+<script>
+var parties = [];
+var groups = [];
+var selectedParty = null;
+var partyOwner = false;
+
+var _partyName = null;
+function partyName() {
+    if (_partyName) {
+        return _partyName;
+    }
+    if (selectedParty) {
+        for (var i = 0; i < parties.length; i++) {
+            if (parties[i].party_id == selectedParty) {
+                return parties[i].name;
+            }
+        }
+    }
+    return "Party";
+}
+
+function waitOnParty(partyId, message) {
+    selectedParty = partyId;
+    
+    document.getElementById('setup-party').style.display = "none";
+    document.getElementById('wait-on-party').style.display = "inherit";
+    document.getElementById('wait-on-party-title').innerHTML = message;
+}
+
+function manageParty(partyId) {
+    document.getElementById('setup-party').style.display = "none";
+    document.getElementById('wait-on-party').style.display = "none";
+    document.getElementById('manage-party').style.display = "inherit";
+
+    if (partyName() != "Party") {
+        document.getElementById('manage-party-title').innerHTML += " " + partyName();
+    }
+}
+
+function attemptJoinParty(partyId) {
+    var data = 'party_id=' + partyId;
+    ajaxOnSuccess('/user/join_party', (resp) => {
+        if (resp.result == 'success') {
+            waitOnParty(partyId, resp.message);
+        }
+        else {
+            console.log(resp.error);
+        }
+    }, data);
+}
+
+function ajaxOnSuccess(endpoint, func, data) {
+    if (!data) {
+        data = '';
+    }
+
+    $.ajax({
+        url: endpoint,
+        type: "POST",
+        data: data,
+        dataType: "json",
+        success: function(resp) {
+            func(resp);
+        },
+        error: function(resp) {
+            console.log(resp, 'fail');
+        }
+    });
+}
+
+function addPartyInfo(party) {
+    var button = document.createElement('button');
+
+    var partyLoc = party.location;
+
+    if (party.name == "Party") {
+        button.innerHTML = "<h3 style='color: black'> Party @ "
+            + partyLoc + "</h3>";
+    }
+    else {
+        button.innerHTML = "<h3 style='color: black'>" +
+            party.name + " - " + partyLoc + "</h3>";
+    }
+
+    var currTime = new Date().getTime();
+    if (party.time * 1000 <= currTime) {
+        button.innerHTML += "Meeting Now"
+    }
+    else {
+        var date = new Date();
+        date.setTime(party.time * 1000);
+
+        var hours = date.getHours();
+        if (hours > 12) {hours -= 12};
+        if (hours == 0) {hours = 0};
+
+        var minutes = String(date.getMinutes());
+        if (minutes.length == 1) {minutes = "0" + minutes;}
+
+        button.innerHTML += "Meeting at " + hours + ":" + minutes;
+    }
+
+    button.style.width = "100%";
+    button.style.marginTop = "10px";
+    button.style.color = 'black';
+    button.id = party.party_id;
+    button.onclick = (e) => {
+        var partyId = e.target.id;
+        if (partyId == "") {
+            partyId = e.target.parentNode.id;
+        }
+        selectedParty = partyId;
+        attemptJoinParty(partyId);
+    }
+
+    document.getElementById('parties').appendChild(button);
+}
+
+function createParty(public, autoJoin, location, name, groupIds) {
+    var data = "public=" + public;
+    data += "&auto_join=" + autoJoin;
+    data += "&location=" + location;
+    data += "&name=" + name;
+    for (var i = 0; i < groupIds.length; i++) {
+        data += "&" + groupIds[i] + "=true"
+    }
+
+    $.ajax({
+        url: "/user/create_party",
+        type: "POST",
+        data: data,
+        dataType: "json",
+        success: function(resp) {
+            if (resp.result == 'success') {
+                partyName_ = name;
+                selectedParty = resp.party_id;
+                partyOwner = true;
+                manageParty(resp.party_id);
+            }
+            e.preventDefault();
+        },
+        error: function(resp) {
+            e.preventDefault();
+        }
+    });
+}
+
+ajaxOnSuccess('/user/get_parties', function(resp) {
+    parties = resp;
+    for (var i = 0; i < parties.length; i++) {
+        addPartyInfo(parties[i]);
+    }
+});
+
+ajaxOnSuccess('/user/getGroups', function(resp) {
+    groups = resp;
+
+    for (var i = 0; i < groups.length; i++) {
+        var group = groups[i];
+
+        var groupElem = document.createElement('label');
+        groupElem.classList.add("container");
+        groupElem.innerHTML = group.name
+        + ` <input type="checkbox" ` + "id=" + group.group_id + ` +>
+            <span class="checkmark"></span>
+        </label>`;
+
+        var refNode = document.getElementById('add_groups');
+        refNode.parentNode.insertBefore(groupElem, refNode.nextSibling);
+    }
+});
+
+$("form[name=create_party").submit(function(e) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    var public = document.getElementById('make_public').checked;
+    var autoJoin = document.getElementById('auto_join').checked;
+    var location = document.getElementById('select-location').value;
+
+    var name = document.getElementById('party-name-entry').value;
+    if (name == "") {
+        name = "Party"
+    }
+
+    var groupIds = [];
+    for (var i = 0; i < groups.length; i++) {
+        if (document.getElementById(groups[i].group_id).checked) {
+            groupIds.push(groups[i].group_id);
+        }
+    }
+
+    createParty(public, autoJoin, location, name, groupIds);
+});
+
+document.getElementById('make_public').addEventListener('click', () => {
+    var public = document.getElementById('make_public').checked;
+
+    var partyGroups = document.getElementById('create-party-groups');
+    if (public) {
+        partyGroups.style.display = "none";
+    }
+    else {
+        partyGroups.style.display = "inherit";
+    }
+});
+
+document.getElementById('parties-random').onclick = () => {
+    var n = parties.length;
+    if (n > 0) {
+        var i = Math.floor(Math.random() * n);
+        var partyId = parties[i].party_id;
+        attemptJoinParty(partyId);
+    }
+    else {
+        var locations = ["NDH", "SDH"]
+        var location = locations[Math.floor(Math.random() * 2)]
+        createParty(true, true, location, "Party", []);
+    }
+}
+
+function acceptUser(e) {
+    var user_id = e.target.id.slice(1);
+    var data = 'user_id=' + user_id + '&party_id=' + selectedParty;
+    ajaxOnSuccess('/user/accept_user', () => {
+        document.getElementById('r' + user_id).remove();
+    }, data);
+}
+
+function declineUser(e) {
+    var user_id = e.target.id.slice(1);
+    var data = 'user_id=' + user_id + '&party_id=' + selectedParty;
+    ajaxOnSuccess('/user/decline_user', (resp) => {
+        console.log(resp);
+        document.getElementById('r' + user_id).remove();
+    }, data);
+}
+
+registerListener('party_request', (info) => {
+
+    var id = info.user_id;
+    var node = document.createElement('div');
+    node.innerHTML = `
+        <h2>` + info.name + `<h2>
+        <button id="a`+id+`" style='margin-left : 20px'>Accept</button>
+        <button id="d`+id+`">Decline</button>
+    `;
+    node.style.padding = "10px";
+    node.style.marginTop = "20px";
+    node.style.background = '#d0f0d0';
+    node.id = 'r' + id;
+
+    document.getElementById('member-requests').appendChild(node);
+    document.getElementById('a' + id).onclick = acceptUser;
+    document.getElementById('d' + id).onclick = declineUser;
+});
+
+registerListener('party_accept', (info) => {
+    document.getElementById('wait-on-party').style.display = "none";
+    document.getElementById('wait-on-party-title').style.display = "none";
+    document.getElementById('party-joined').style.display = "inherit";
+
+    var title = document.getElementById('party-joined-title');
+    if (partyName() != "Party") {
+        title.innerHTML = "You have joined " + partyName() + "!"
+    }
+    else {
+        title.innerHTML = "You have joined a party!"
+    }
+});
+
+registerListener('party_decline', (info) => {
+    window.location.href = "/dineNow";
+});
+
+registerListener('party_created', (info) => {
+    addPartyInfo(info);
+    parties.push(info);
+});
+
+registerListener('party_new_member', (info) => {
+    var nMembers = info.n_members;
+
+    document.getElementById('party-count').innerHTML = nMembers + ' Members';
+    document.getElementById('party-count-manager').innerHTML = nMembers + ' Members';
+});
+
+function chatEntry(event) {
+    if (event.keyCode == 13) {
+        data = "message=" + event.target.value + "&party_id=" + selectedParty;
+
+        ajaxOnSuccess('/user/party_chat', () => {}, data);
+        
+        event.target.value = "";
+    }
+}
+
+document.getElementById('chat-entry-1').addEventListener('keydown', chatEntry);
+document.getElementById('chat-entry-2').addEventListener('keydown', chatEntry);
+
+registerListener('party_chat', (info) => {
+    var user_id = getCookie('user_id');
+
+    var blurb1 = document.createElement('div');
+    blurb1.innerHTML = "<h4>" + info.message + "</h4>";
+    blurb1.style.padding = "10px";
+    blurb1.style.marginTop = "15px";
+    blurb1.style.width = "80%";
+    blurb1.style.borderRadius = "10px";
+
+    var blurb2 = document.createElement('div');
+    blurb2.innerHTML = "<h4>" + info.message + "</h4>";
+    blurb2.style.padding = "10px";
+    blurb2.style.marginTop = "15px";
+    blurb2.style.width = "80%";
+    blurb2.style.borderRadius = "10px";
+
+    if (user_id == info.user_id) {
+        blurb1.style.background = "#D0D0D0";
+        blurb1.style.float = "right";
+        blurb1.style.textAlign = "right";
+        blurb2.style.background = "#D0D0D0";
+        blurb2.style.float = "right";
+        blurb2.style.textAlign = "right";
+        blurb2.innerHTML += "Me";
+    }
+    else {
+        blurb1.style.background = "#D0D0FF";
+        blurb1.style.float = "left";
+        blurb1.style.textAlign = "left";
+        blurb2.style.background = "#D0D0FF";
+        blurb2.style.float = "left";
+        blurb2.style.textAlign = "left";
+        blurb1.innerHTML += info.name;
+        blurb2.innerHTML += info.name;
+    }
+
+    var before1 = document.getElementById('chat-entry-1');
+    var before2 = document.getElementById('chat-entry-2');
+
+    before1.parentNode.insertBefore(blurb1, before1.nextSibling);
+    before2.parentNode.insertBefore(blurb2, before2.nextSibling);
+});
+
+registerListener('party_leave', (info) => {
+    console.log(info);
+    if (selectedParty) {
+        window.location.href = "/dineNow";
+    }
+    else {
+        document.getElementById(info.party_id).remove();
+    }
+});
+
+</script>
+
 {% endblock %}

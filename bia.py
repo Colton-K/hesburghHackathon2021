@@ -5,6 +5,7 @@ from functools import wraps
 import os
 import socket
 import requests
+from user import messaging
 
 app = Flask(__name__)
 app.secret_key = os.urandom(16)
@@ -39,7 +40,7 @@ def loginRequired(f):
     return wrap
 
 
-from user import routes, messaging, sessions
+from user import routes, sessions, users, groups, parties
 
 """
     Home page
@@ -58,6 +59,14 @@ def index():
 def login():
     return render_template('login.html')
 
+"""
+    Logout Page
+"""
+@app.route("/logout")
+def logout():
+    
+    return index()
+
 #  """
     #  New user page
 #  """
@@ -72,7 +81,22 @@ def login():
 @app.route("/profile")
 @loginRequired
 def profile():
-    return render_template('profile.html')
+    userID = request.cookies.get("user_id")
+    username = users.getUserInfo(userID)['name']
+    g = groups.getUserGroups(userID)
+    if not g:
+        g = "You do not belong to any groups."
+    else:
+        g = "Groups: "
+        groupList = groups.getUserGroups(userID)
+        for group in groupList:
+            g += group['name']
+            g += ", "
+        g = g[:-2]
+
+    profilePic = users.getUserInfo(userID) #['profilePic']
+    #  profilePic = 'https://b-ingwersen.github.io/photos/self.jpg'
+    return render_template('profile_page.html', name=username, groups=g, imgSource=profilePic)
 
 """
     Dine now page
@@ -80,6 +104,8 @@ def profile():
 @app.route("/dineNow")
 @loginRequired
 def dineNow():
+    userId = request.cookies.get("user_id")
+    parties.removeUserFromParties(userId)
     return render_template("dineNow.html")
 
 #  """
@@ -112,4 +138,4 @@ def dineNow():
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
 
-    app.run(host=getIP(), port=3600)
+    app.run(host=getIP(), port=3601)

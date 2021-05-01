@@ -3,23 +3,42 @@
 {% block content %}
 <html>
 	<body>
-	<div align="right">
-        <form action="profile" method="POST">
-			<button class="button1" type="button" title="Profile" align="right">Profile</button>
-        </form>
-			<h1><center>Locations</center></h1>
-		</div>
-		<div>
-			<div>
-				<img alt="North Dining Hall" class=".center" src="https://i.ibb.co/pwPZrGs/OIP.jpg"></img>
-				hello
+	<div id = "main">
+		<form action="profile">
+			<button class="button1" align="right"><i class="fa fa-user-circle" aria-hidden="true"></i></button>
+		</form>
+		
+		<h1></img>Bia: Find a dinner buddy</h1>
+		<div id = "dhCard" class="row">
+			<div class="column"><img alt="North Dining Hall" src="https://i.ibb.co/pwPZrGs/OIP.jpg"></img></div>
+			<div class="column">
+				<h2>North Dining Hall</h2>
+				<h3>Hours today:</h3>
+				<p>Breakfast 7:00 am – 10:00 am</p>
+				<p>Lunch 11:00 am – 2:30 pm</p>
+				<p>Dinner 4:30 pm – 7:30 pm</p>
+				<br></br>
+				<a href="http://nutrition.nd.edu/NetNutrition/1"><button class="button2" align="center">Menu</button></a>
 			</div>
+		</div>
 		<br></br>
-		<img alt="South Dining Hall" class=".center" src="https://i.ibb.co/FwMZPWN/OIP-1.jpg"></img>
+		<div id = "dhCard" class="row">
+			<div class="column"><img alt="South Dining Hall" src="https://i.ibb.co/FwMZPWN/OIP-1.jpg"></img></div>
+			<div class="column">
+				<h2>South Dining Hall</h2>
+				<h3>Hours today:</h3>
+				<p>Breakfast 7:00 am – 10:00 am</p>
+				<p>Lunch 11:00 am – 2:30 pm</p>
+				<p>Dinner 4:30 pm – 7:30 pm</p>
+				<br></br>
+				<a href="http://nutrition.nd.edu/NetNutrition/1"><button class="button2" align="center">Menu</button></a>
+			</div>
+		</div>
+		<br></br>
+		<form action="dineNow">
+			<button class="button2" align="center">Dine Now</button>
+		</form>
 	</div>
-    <form action="dineNow">
-	    <button class="button2" align="center">DINE NOW</button>
-    </form>
 
 	</body>
 </html>

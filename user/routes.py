@@ -15,3 +15,44 @@ def signout():
 @app.route('/user/login', methods=['POST'])
 def login_():
     return User().login()
+
+@app.route('/user/addGroup', methods=['POST'])
+def addGroup():
+    return User().addGroup()
+
+# not currently working
+@app.route('/user/getGroups', methods=['POST'])
+def getGroups():
+    return User().getGroups()
+
+@app.route('/user/createGroup', methods=['POST'])
+def createGroup():
+    return User().createGroup()
+
+@app.route('/user/searchGroups', methods=['POST'])
+def searchGroups():
+    return User().searchGroups()
+
+@app.route('/user/get_parties', methods=['POST'])
+def getParties():
+    return User().getParties()
+
+@app.route('/user/create_party', methods=['POST'])
+def createParty():
+    return User().createParty()
+
+@app.route('/user/join_party', methods=['POST'])
+def joinParty():
+    return User().joinParty()
+
+@app.route('/user/accept_user', methods=['POST'])
+def acceptUser():
+    return User().acceptUser()
+
+@app.route('/user/decline_user', methods=['POST'])
+def declineUser():
+    return User().declineUser()
+
+@app.route('/user/party_chat', methods=['POST'])
+def partyChat():
+    return User().partyChat()

@@ -3,8 +3,21 @@ import asyncio
 import websockets
 import threading
 import json
-from bia import getIP
+import socket
 from user import sessions
+import os
+
+def getIP():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    try:
+        s.connect(("10.255.255.255", 1))
+        IP = s.getsockname()[0]
+    except:
+        IP = "127.0.0.1"
+    finally:
+        s.close
+    return IP
 
 class Connection:
 
@@ -37,7 +50,11 @@ class ConnectionDispatcher:
         self.connections = {} # Dict[user_id, Set[Connection]]
         self.connectedUsers = set()
 
+        print(self.connections)
+
     def addConnection(self, userId, connection):
+        print("CONNECTION IN", id(self))
+
         if userId not in self.connections:
             self.connections[userId] = {connection}
         else:
@@ -52,7 +69,6 @@ class ConnectionDispatcher:
             self.connectedUsers.remove(userId)
 
     async def handler(self, websocket, path):
-
         try:
             credentials = await websocket.recv()
             credentials = json.loads(credentials)
@@ -79,7 +95,8 @@ class ConnectionDispatcher:
                 connection.send(topic, message)
 
     def sendSome(self, users, topic, message):
-        sendUsers = self.connectedUsers & users
+        sendUsers = set(self.connections.keys()) & users
+
         for userId in sendUsers:
             for connection in self.connections[userId]:
                 connection.send(topic, message)
@@ -98,8 +115,9 @@ _loop = None
 connectionDispatcher = ConnectionDispatcher()
 
 def runServer():
-    global _loop
+    global _loop, connectionDispatcher
 
+    connectionDispatcher = ConnectionDispatcher()
     _loop = asyncio.new_event_loop()
     asyncio.set_event_loop(_loop)
 
@@ -110,4 +128,7 @@ def runServer():
     _loop.run_until_complete(server)
     _loop.run_forever()
 
-threading.Thread(target = runServer).start()
+if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+    threading.Thread(target = runServer).start()
+
+

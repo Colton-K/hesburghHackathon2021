@@ -3,7 +3,7 @@
 from flask import Flask, jsonify, request, session, redirect
 import uuid
 from passlib.hash import pbkdf2_sha256
-from user import users, sessions
+from user import users, sessions, parties, groups
 
 class User:
 
@@ -48,3 +48,90 @@ class User:
             return self.startSession(user)
         else:
             return jsonify({ "error": "Invalid login credentials" }), 401
+
+
+    def getGroups(self):
+        userId = request.cookies.get("user_id")
+        return jsonify(groups.getUserGroups(userId)), 200
+
+    def addGroup(self):
+        userId = request.cookies.get("user_id")
+        groupName = dict(request.form)['name']
+
+        groupId = groups.searchGroups(groupName)[0]['group_id']        
+        r = groups.joinGroup(userId, groupId)
+        print(groupId, "\n", r)
+        return jsonify(groups.getUserGroups(userId)), 201
+
+    def searchGroups(self):
+        userId = request.cookies.get("user_id")
+        data = dict(request.form)['query']
+        print(data)
+        return jsonify(groups.searchGroups(data, userId))
+
+    def createGroup(self):
+        userId = request.cookies.get("user_id")
+        name = dict(request.form)['groupName']
+        r = groups.createGroup(name, userId, publicVisible=True, publicJoinable=True)
+        print("creation:",r)
+        return jsonify(groups.searchGroups(name, userId)), 201
+
+    def getParties(self):
+        userId = request.cookies.get("user_id")
+        return jsonify(parties.getJoinableParties(userId)), 200
+
+    def createParty(self):
+        userId = request.cookies.get("user_id")
+        data = dict(request.form)
+        public = data['public'] == 'true'
+        autoJoin = data['auto_join'] == 'true'
+        name = data['name']
+        location = data['location']
+
+        print("LOCATION", location)
+
+        groups_ = []
+        for key in data:
+            if key not in {'public', 'name', 'auto_join', 'location'}:
+                groups_.append(key)
+
+        result = parties.createParty(userId, groups_, location, None,
+            public = public, autoJoin = autoJoin, name = name)
+        return jsonify(result), 200
+    
+    def joinParty(self):
+        userId = request.cookies.get("user_id")
+        data = dict(request.form)
+        partyId = data['party_id']
+
+        result = parties.joinPartyRequest(userId, partyId)
+        return jsonify(result), 200
+
+    def acceptUser(self):
+        leaderId = request.cookies.get("user_id")
+        data = dict(request.form)
+        partyId = data['party_id']
+        userId = data['user_id']
+
+        result = parties.acceptJoinParty(leaderId, userId, partyId)
+        return jsonify(result), 200
+
+    def declineUser(self):
+        leaderId = request.cookies.get("user_id")
+        data = dict(request.form)
+        partyId = data['party_id']
+        userId = data['user_id']
+
+        print(data)
+
+        result = parties.declineJoinParty(leaderId, userId, partyId)
+        return jsonify(result), 200
+    
+    def partyChat(self):
+        userId = request.cookies.get("user_id")
+        data = dict(request.form)
+        partyId = data['party_id']
+        message = data['message']
+
+        result = parties.partyChat(userId, partyId, message);
+        return jsonify(result), 200

@@ -31,7 +31,8 @@ def createUser(name, password, email):
         'groups' : [],
         'invited' : [],
         'parties' : [],
-        'invited_parties' : [],
+        'party_invites' : [],
+        'party_requests' : [],
         'notifications' : []
     })
 
